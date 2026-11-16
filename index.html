@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OT AIR — นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</title>
+  <title>OT AIR — นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,7 +136,7 @@
       table tr { page-break-inside: avoid; }
     }
   </style>
-<style data-link-removed-style>a[data-link-removed],a[href*="zPythonSafez"]:not([onclick]){pointer-events:none!important;cursor:default!important;opacity:.6}</style></head>
+</head>
 <body>
 
   <!-- Top Header -->
@@ -149,7 +149,11 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-slate-900">OT AIR</h1>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</span>
+            <span id="liveSyncStatusPill" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span id="liveSyncStatusText">กำลังเชื่อมต่อ Cloud...</span>
+            </span>
           </div>
           <p class="text-xs text-slate-500">ระบบจัดการการขอเปิดแอร์นอกเวลางาน (Air Conditioning Overtime Request System)</p>
         </div>
@@ -157,6 +161,9 @@
 
       <!-- Portal Switcher & Auth State -->
       <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-secondary text-xs py-2 px-3" onclick="manualSyncNow()" title="ซิงค์ข้อมูลล่าสุดทันที">
+          🔄 ซิงค์ข้อมูล
+        </button>
         <button id="navUserPortalBtn" type="button" class="btn btn-primary text-sm" onclick="switchPortal('user')">
           📱 ฝั่งผู้ใช้งาน (User Portal)
         </button>
@@ -523,11 +530,10 @@
 
           <!-- Document 1: Invoice Summary -->
           <div id="invoiceDoc1Container" class="card p-8 space-y-6">
-            <!-- Organization Header from image -->
             <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
-              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</div>
-              <div>1168 อาคารลุมพินีทาวเวอร์ ถนนพระราม 4 แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพมหานคร 10120</div>
-              <div>โทรศัพท์ 02-6776356-7 | เลขประจำตัวผู้เสียภาษี 0994000189231  (สำนักงานใหญ่)</div>
+              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</div>
+              <div>62 ถนนสุขุมวิท ต.ปากน้ำ อ.เมืองสมุทรปราการ จ.สมุทรปราการ 10270</div>
+              <div>โทรศัพท์ 021164266 | มือถือ: 0863375256 | เลขประจำตัวผู้เสียภาษี 0994002090517 (สำนักงานใหญ่)</div>
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
@@ -568,11 +574,10 @@
 
           <!-- Document 2: Detailed Usage Breakdown -->
           <div id="invoiceDoc2Container" class="card p-8 space-y-6">
-            <!-- Organization Header from image -->
             <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
-              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</div>
-              <div>1168 อาคารลุมพินีทาวเวอร์ ถนนพระราม 4 แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพมหานคร 10120</div>
-              <div>โทรศัพท์ 02-6776356-7 | เลขประจำตัวผู้เสียภาษี 0994000189231 (สำนักงานใหญ่)</div>
+              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</div>
+              <div>62 ถนนสุขุมวิท ต.ปากน้ำ อ.เมืองสมุทรปราการ จ.สมุทรปราการ 10270</div>
+              <div>โทรศัพท์ 021164266 | มือถือ: 0863375256 | เลขประจำตัวผู้เสียภาษี 0994002090517 (สำนักงานใหญ่)</div>
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
@@ -596,6 +601,7 @@
                     <th>ยูนิต / บริษัท</th>
                     <th>ผู้ขอใช้บริการ</th>
                     <th>โซน</th>
+                    <th>ช่วงเวลา</th>
                     <th>รายละเอียด Group Breakdown</th>
                     <th class="num">ชั่วโมง</th>
                     <th class="num">ยอดเงิน (บาท)</th>
@@ -816,9 +822,6 @@
             <button type="button" id="subTabBtnBackup" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('backup')">
               📖 สำรองข้อมูล JSON
             </button>
-            <button type="button" id="subTabBtnSysInfo" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sysinfo')">
-              🧬 ข้อมูลระบบ
-            </button>
           </div>
 
           <!-- SUB-TAB 1: GENERAL & TELEGRAM CONFIG -->
@@ -863,8 +866,8 @@
               <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
               <span class="w-3 h-3 rounded-full bg-emerald-500 absolute"></span>
               <div class="ml-1 text-xs">
-                <strong class="block text-emerald-900">ระบบบันทึกอัตโนมัติทำงานอยู่</strong>
-                <p class="text-emerald-700 mt-0.5">ทุกการเพิ่ม แก้ไข ลบ จะถูกบันทึกและส่งขึ้น Google Sheets & Drive อัตโนมัติ</p>
+                <strong class="block text-emerald-900">ระบบซิงค์อัตโนมัติทำงานอยู่ (Real-time Polling ทุก 10 วินาที)</strong>
+                <p class="text-emerald-700 mt-0.5">ทุกการเพิ่ม แก้ไข ลบ จะถูกบันทึกและซิงค์ข้ามทุกอุปกรณ์ผ่าน Google Sheets อัตโนมัติ</p>
               </div>
             </div>
 
@@ -872,10 +875,10 @@
             <div class="card p-6 space-y-5">
               <h4 class="text-base font-bold text-slate-900">เชื่อมต่อตาราง Google Sheets</h4>
 
-              <div id="gasSyncWarningBlock" class="p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3">
+              <div id="gasSyncWarningBlock" class="p-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl flex items-center justify-between gap-3">
                 <div class="text-xs">
-                  <strong class="text-red-900 block" id="gasStatusHeader">เชื่อมต่อไม่สำเร็จ</strong>
-                  <p class="text-red-700 mt-0.5" id="gasStatusText">ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"</p>
+                  <strong class="text-slate-900 block" id="gasStatusHeader">พร้อมตรวจสอบการเชื่อมต่อ</strong>
+                  <p class="text-slate-600 mt-0.5" id="gasStatusText">คลิกปุ่มทดสอบการเชื่อมต่อ เพื่อเช็กความพร้อมของ Web App URL</p>
                 </div>
                 <button type="button" class="btn btn-secondary text-xs flex items-center gap-1 bg-white" onclick="testGasConnection()">
                   🔍 ทดสอบการเชื่อมต่อ
@@ -891,34 +894,25 @@
                   </button>
                 </div>
                 <input type="url" id="gasWebhookUrlInput" class="input-field font-mono text-xs text-slate-800" value="https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF50IibrxKfb97KJSuMuvgKo7x_0NJlRsBi_4g4GL5S6jPZAuUDLwj/exec" onchange="saveGeneralSettings()">
-                <button type="button" class="btn btn-primary text-xs w-28" onclick="saveGeneralSettings()">💾 บันทึก URL</button>
+                <div class="flex items-center gap-2">
+                  <button type="button" class="btn btn-primary text-xs" onclick="saveGeneralSettings()">💾 บันทึก URL</button>
+                  <button type="button" class="btn btn-success text-xs" onclick="forcePushAllToGas()">☁️ ส่งข้อมูลทั้งหมดขึ้น Sheet ทันที</button>
+                </div>
               </div>
 
               <!-- Metrics -->
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
                   <span class="text-[10px] text-slate-500 block">โหมดซิงค์</span>
-                  <strong class="text-xs text-slate-800">เรียลไทม์ (Cloud Sync)</strong>
+                  <strong class="text-xs text-slate-800">เรียลไทม์ (2-Way Sync)</strong>
                 </div>
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
                   <span class="text-[10px] text-slate-500 block">เวอร์ชันสคริปต์</span>
                   <strong class="text-xs text-slate-800">v3.4.0</strong>
                 </div>
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
-                  <span class="text-[10px] text-slate-500 block">รุ่นข้อมูล (Revision)</span>
-                  <strong class="text-xs text-slate-800">รองรับ</strong>
-                </div>
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
-                  <span class="text-[10px] text-slate-500 block">ส่งข้อมูลล่าสุด</span>
+                  <span class="text-[10px] text-slate-500 block">อัปเดตข้อมูลล่าสุด</span>
                   <strong id="gasLastSyncTime" class="text-xs text-slate-800">-</strong>
-                </div>
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
-                  <span class="text-[10px] text-slate-500 block">ตรวจสอบล่าสุด</span>
-                  <strong id="gasLastTestStatus" class="text-xs text-slate-800">ยังไม่มีการทดสอบ</strong>
-                </div>
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
-                  <span class="text-[10px] text-slate-500 block">ความเร็วตอบสนอง</span>
-                  <strong id="gasResponseTime" class="text-xs text-slate-800">- ms</strong>
                 </div>
               </div>
             </div>
@@ -938,18 +932,6 @@
               </div>
             </div>
           </div>
-
-          <!-- SUB-TAB 4: DIAGNOSTICS & WEBHOOK LOGS -->
-          <div id="subTabSysInfo" class="hidden space-y-6">
-            <div class="card p-6 space-y-4">
-              <h4 class="text-base font-bold text-slate-900">🧬 ข้อมูลของระบบ (Diagnostics & Webhook Logs)</h4>
-              <p class="text-xs text-slate-500">ระบบคีย์บันทึกข้อมูลแบบ Cloud Serverless ประสานงานผ่าน API อัตโนมัติ</p>
-              <div class="space-y-3">
-                <h5 class="text-xs font-bold text-slate-800">พรีวิวข้อความที่ส่งไปยัง Telegram (Webhook Log)</h5>
-                <div id="telegramLogContainer" class="space-y-2 max-h-60 overflow-y-auto text-xs bg-slate-50 p-4 border border-slate-200 rounded-xl"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -957,7 +939,7 @@
 
   </main>
 
-  <!-- Modern Time Picker Modal (Clock & Keyboard options) -->
+  <!-- Modern Time Picker Modal -->
   <div id="modernTimePickerModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
     <div class="card max-w-lg w-full p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -968,7 +950,6 @@
         <button type="button" class="text-slate-400 hover:text-slate-600 text-lg font-bold" onclick="closeModernTimePicker()">✕</button>
       </div>
 
-      <!-- Mode Tab Selector -->
       <div class="flex bg-slate-100 p-1 rounded-lg">
         <button type="button" id="timePickerTabClock" class="flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-slate-800 shadow-sm" onclick="switchTimePickerTab('clock')">
           🕒 เลือกจากหน้าปัดนาฬิกา
@@ -978,26 +959,19 @@
         </button>
       </div>
 
-      <!-- Clock Face Tab View -->
       <div id="timePickerClockView" class="space-y-4 py-2">
         <div class="text-center text-xs text-slate-500">คลิกเลือกตัวเลขชั่วโมงบนหน้าปัด (วงนอก = 0-11 น., วงใน = 12-23 น.)</div>
         <div class="flex justify-center items-center py-4">
-          <!-- Circular Clock Face Container -->
           <div class="relative w-64 h-64 rounded-full bg-slate-50 border border-slate-200 shadow-inner flex items-center justify-center">
-            <!-- Center Pivot -->
             <div class="absolute w-3 h-3 rounded-full bg-sky-600 z-20 shadow"></div>
-            <!-- Clock Hand -->
             <div id="clockHandIndicator" class="absolute bg-sky-500 origin-bottom bottom-1/2 left-[126px] w-1 h-24 rounded-full z-10 transition-transform duration-200" style="transform: rotate(180deg);">
               <div class="absolute -top-1 -left-1.5 w-4 h-4 rounded-full bg-sky-600 border border-white"></div>
             </div>
-
-            <!-- Hour positions (0 to 23 rendered dynamically via JavaScript) -->
             <div id="clockHoursContainer" class="absolute inset-0 z-10 pointer-events-none"></div>
           </div>
         </div>
       </div>
 
-      <!-- Manual Type Tab View -->
       <div id="timePickerTypeView" class="hidden space-y-4 py-4">
         <div class="flex items-center justify-center gap-4">
           <div>
@@ -1011,13 +985,11 @@
           <div class="text-2xl font-bold text-slate-400 mt-5">:</div>
           <div>
             <label class="block text-center text-xs font-semibold text-slate-600 mb-1">นาที</label>
-            <input type="text" value="00" class="input-field text-center font-bold text-lg w-16" readonly disabled title="แอร์คิดค่าบริการเป็นรายชั่วโมง">
+            <input type="text" value="00" class="input-field text-center font-bold text-lg w-16" readonly disabled>
           </div>
         </div>
-        <p class="text-center text-[11px] text-slate-400">หมายเหตุ: ระบบแอร์และราคาประเมินคิดตามชั่วโมงเต็มที่ใช้งาน</p>
       </div>
 
-      <!-- Rate Preview Status -->
       <div class="p-3 rounded-lg bg-sky-50 border border-sky-200 text-xs flex items-center justify-between">
         <div>
           <span class="text-slate-500 block">เวลาที่เลือกอยู่</span>
@@ -1029,7 +1001,6 @@
         </div>
       </div>
 
-      <!-- Action Footer -->
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
         <button type="button" class="btn btn-secondary text-xs" onclick="closeModernTimePicker()">ยกเลิก</button>
         <button type="button" class="btn btn-primary text-xs font-bold" onclick="confirmModernTimeSelection()">💾 ตกลงเลือกเวลานี้</button>
@@ -1046,7 +1017,7 @@
       </div>
       <form onsubmit="handleNewRateSubmit(event)" class="space-y-3 text-xs">
         <div>
-          <label for="newRateName" class="block font-semibold text-slate-700 mb-1">เงื่อนไข / ชื่อช่วงเวลา (เช่น วันเสาร์ช่วงบ่าย)</label>
+          <label for="newRateName" class="block font-semibold text-slate-700 mb-1">เงื่อนไข / ชื่อช่วงเวลา</label>
           <input type="text" id="newRateName" class="input-field text-xs" required placeholder="ระบุชื่อเรียกเรทราคา">
         </div>
         <div>
@@ -1275,7 +1246,7 @@
 
   <script>
     // ==================== STATE & STORAGE ====================
-    const STORAGE_KEY = 'OT_AIR_APP_STATE_V4';
+    const STORAGE_KEY = 'OT_AIR_APP_STATE_V5';
 
     const defaultState = {
       passwords: {
@@ -1325,6 +1296,7 @@
 
     let appState = loadAppState();
     let currentSessionRole = null;
+    let autoSyncInterval = null;
 
     function loadAppState() {
       try {
@@ -1344,85 +1316,181 @@
             telegramLogs: Array.isArray(parsed.telegramLogs) ? parsed.telegramLogs : []
           };
         }
-      } catch (e) {
-        // Fallback to in-memory state
-      }
+      } catch (e) {}
       return JSON.parse(JSON.stringify(defaultState));
     }
 
     function saveAppState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      } catch (e) {
-        // Ignore sandbox storage restrictions
-      }
-      syncToGasIfConfigured();
+      } catch (e) {}
+      
+      syncToGasIfConfigured("SYNC_ALL", null, {
+        units: appState.units,
+        zones: appState.zones,
+        ratesList: appState.ratesList,
+        holidays: appState.holidays,
+        serviceTermsList: appState.serviceTermsList
+      });
     }
 
-    // ==================== ฟังก์ชันดึงข้อมูลล่าสุดจาก Google Sheets (Cloud Sync Load) ====================
-    async function loadRequestsFromGas() {
+    // ==================== 2-WAY CLOUD SYNC (NO-CACHE & REAL-TIME POLLING) ====================
+    function updateLiveSyncBadge(status, text) {
+      const pill = document.getElementById('liveSyncStatusPill');
+      const txtEl = document.getElementById('liveSyncStatusText');
+      if (!pill || !txtEl) return;
+      txtEl.textContent = text;
+      if (status === 'ok') {
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+      } else if (status === 'syncing') {
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200';
+      } else {
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+      }
+    }
+
+    async function loadRequestsFromGas(isSilent = false) {
       if (!appState.gasWebhookUrl) return;
+      if (!isSilent) updateLiveSyncBadge('syncing', 'กำลังซิงค์ข้อมูล...');
       
       try {
-        const response = await fetch(`${appState.gasWebhookUrl}?action=GET_REQUESTS`, {
-          method: 'GET'
+        const nocacheUrl = `${appState.gasWebhookUrl}?action=GET_REQUESTS&t=${Date.now()}`;
+        const response = await fetch(nocacheUrl, {
+          method: 'GET',
+          redirect: 'follow'
         });
+        
+        if (!response.ok) throw new Error('HTTP ' + response.status);
         const result = await response.json();
         
-        if (result && result.status === 'success' && Array.isArray(result.data)) {
-          const loadedRequests = result.data.map(item => {
-            let zonesArray = [];
-            if (typeof item.zones === 'string') {
-              zonesArray = item.zones.split(',').map(z => z.trim()).filter(Boolean);
-            } else if (Array.isArray(item.zones)) {
-              zonesArray = item.zones;
+        if (result && result.status === 'success') {
+          let hasChanged = false;
+
+          // 1. ซิงค์การตั้งค่าระบบ (ยูนิต, โซน, เรทราคา, วันหยุด, เงื่อนไข)
+          if (result.settings && typeof result.settings === 'object') {
+            const oldSettingsStr = JSON.stringify({
+              units: appState.units,
+              zones: appState.zones,
+              ratesList: appState.ratesList,
+              holidays: appState.holidays,
+              serviceTermsList: appState.serviceTermsList
+            });
+            const newSettingsStr = JSON.stringify(result.settings);
+
+            if (oldSettingsStr !== newSettingsStr) {
+              if (Array.isArray(result.settings.units)) appState.units = result.settings.units;
+              if (Array.isArray(result.settings.zones)) appState.zones = result.settings.zones;
+              if (Array.isArray(result.settings.ratesList)) appState.ratesList = result.settings.ratesList;
+              if (Array.isArray(result.settings.holidays)) appState.holidays = result.settings.holidays;
+              if (Array.isArray(result.settings.serviceTermsList)) appState.serviceTermsList = result.settings.serviceTermsList;
+
+              populateUnitDropdowns();
+              renderUserZonesCheckboxes();
+              renderUserRatesTable();
+              renderServiceTermsOnUserPortal();
+              renderAdminZonesTable();
+              renderRatesTable();
+              renderHolidaysList();
+              renderTermsTable();
+              renderUnitMasterTable();
+              hasChanged = true;
             }
+          }
 
-            return {
-              id: String(item.id || ''),
-              date: item.date || '',
-              startHour: parseHourFromString(item.startTime),
-              endHour: parseHourFromString(item.endTime),
-              unitNo: String(item.unitNo || ''),
-              company: item.company || '',
-              requester: item.requester || '',
-              requesterPhone: item.requesterPhone || '-',
-              zones: zonesArray,
-              note: item.note === '-' ? '' : (item.note || ''),
-              totalHours: Number(item.totalHours || 0),
-              totalCost: Number(item.totalCost || 0),
-              status: item.status || 'APPROVED',
-              isDuplicate: false,
-              groups: [],
-              createdAt: item.timestamp || new Date().toISOString()
-            };
-          });
+          // 2. ซิงค์รายการคำขอทั้งหมด
+          if (Array.isArray(result.data)) {
+            const loadedRequests = result.data.map(item => {
+              let zonesArray = [];
+              if (typeof item.zones === 'string') {
+                zonesArray = item.zones.split(',').map(z => z.trim()).filter(Boolean);
+              } else if (Array.isArray(item.zones)) {
+                zonesArray = item.zones;
+              }
 
-          if (loadedRequests.length > 0) {
-            appState.requests = loadedRequests;
-            recalculateDuplicatesAcrossAll();
-            
-            // อัปเดตตารางและหน้าจอแดชบอร์ดทั้งหมด
+              const dateFormatted = formatSheetDate(item.date);
+              const sHour = parseHourFromString(item.startTime);
+              const eHour = parseHourFromString(item.endTime);
+              const calc = calculateGroupBreakdown(dateFormatted, sHour, eHour);
+
+              return {
+                id: String(item.id || ''),
+                date: dateFormatted,
+                startHour: sHour,
+                endHour: eHour,
+                unitNo: String(item.unitNo || ''),
+                company: item.company || '',
+                requester: item.requester || '',
+                requesterPhone: item.requesterPhone || '-',
+                zones: zonesArray,
+                note: item.note === '-' ? '' : (item.note || ''),
+                totalHours: Number(item.totalHours || 0),
+                totalCost: Number(item.totalCost || 0),
+                status: item.status || 'APPROVED',
+                isDuplicate: false,
+                groups: calc.valid ? calc.groups : [],
+                createdAt: item.timestamp || new Date().toISOString()
+              };
+            });
+
+            // เรียงลำดับจากใหม่ไปเก่า
+            loadedRequests.reverse();
+
+            if (JSON.stringify(loadedRequests) !== JSON.stringify(appState.requests)) {
+              appState.requests = loadedRequests;
+              recalculateDuplicatesAcrossAll();
+              hasChanged = true;
+            }
+          }
+
+          if (hasChanged) {
             renderUserRequestsTable();
             renderAdminDashboardAndTable();
             renderAdminRequestsTable();
             renderInvoices();
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) {}
           }
+
+          const nowStr = new Date().toLocaleTimeString('th-TH');
+          updateLiveSyncBadge('ok', `ซิงค์ล่าสุด ${nowStr}`);
+          const syncEl = document.getElementById('gasLastSyncTime');
+          if (syncEl) syncEl.textContent = nowStr;
         }
       } catch (err) {
-        console.error("Failed to load requests from GAS:", err);
+        updateLiveSyncBadge('warn', 'ออฟไลน์ / รอการเชื่อมต่อ');
       }
+    }
+
+    function formatSheetDate(val) {
+      if (!val) return '';
+      const str = String(val);
+      if (str.includes('T')) {
+        const dt = new Date(str);
+        if (!isNaN(dt.getTime())) {
+          const y = dt.getFullYear();
+          const m = String(dt.getMonth() + 1).padStart(2, '0');
+          const d = String(dt.getDate()).padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        }
+      }
+      return str.split(' ')[0];
     }
 
     function parseHourFromString(timeStr) {
       if (!timeStr) return 0;
-      const parts = String(timeStr).split(':');
+      const str = String(timeStr);
+      if (str.includes('T')) {
+        const dt = new Date(str);
+        if (!isNaN(dt.getTime())) return dt.getHours();
+      }
+      const parts = str.split(':');
       return parseInt(parts[0], 10) || 0;
     }
 
-    async function syncToGasIfConfigured(actionType = "SYNC_STATE", reqPayload = null) {
+    async function syncToGasIfConfigured(actionType = "SYNC_ALL", reqPayload = null, settingsObj = null) {
       const statusEl = document.getElementById('gasLastSyncTime');
       if (!appState.gasWebhookUrl) return;
+      updateLiveSyncBadge('syncing', 'กำลังบันทึกขึ้น Cloud...');
+
       try {
         await fetch(appState.gasWebhookUrl, {
           method: 'POST',
@@ -1432,16 +1500,54 @@
             action: actionType, 
             timestamp: new Date().toISOString(), 
             payload: reqPayload,
+            settings: settingsObj,
             requests: appState.requests 
           })
         });
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('th-TH');
         if (statusEl) {
-          const now = new Date();
-          statusEl.textContent = now.toLocaleTimeString('th-TH') + ' (' + formatThaiDate(now.toISOString().split('T')[0]) + ')';
+          statusEl.textContent = timeStr + ' (' + formatThaiDate(now.toISOString().split('T')[0]) + ')';
         }
+        updateLiveSyncBadge('ok', `บันทึกแล้ว ${timeStr}`);
+        
+        // ดึงข้อมูลยืนยันกลับอีกครั้งหลังส่ง 1.5 วินาที
+        setTimeout(() => loadRequestsFromGas(true), 1500);
       } catch (err) {
-        // Safe fail
+        updateLiveSyncBadge('warn', 'ส่งข้อมูลไม่สำเร็จ');
       }
+    }
+
+    function manualSyncNow() {
+      loadRequestsFromGas(false);
+    }
+
+    function forcePushAllToGas() {
+      syncToGasIfConfigured("SYNC_ALL", null, {
+        units: appState.units,
+        zones: appState.zones,
+        ratesList: appState.ratesList,
+        holidays: appState.holidays,
+        serviceTermsList: appState.serviceTermsList
+      });
+    }
+
+    function startRealTimeSync() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
+      autoSyncInterval = setInterval(() => {
+        const isModalOpen = !document.getElementById('modernTimePickerModal').classList.contains('hidden') ||
+                            !document.getElementById('addRateModal').classList.contains('hidden') ||
+                            !document.getElementById('addHolidayModal').classList.contains('hidden') ||
+                            !document.getElementById('addTermModal').classList.contains('hidden') ||
+                            !document.getElementById('addZoneModal').classList.contains('hidden') ||
+                            !document.getElementById('editZoneModal').classList.contains('hidden') ||
+                            !document.getElementById('addUnitModal').classList.contains('hidden') ||
+                            !document.getElementById('duplicateConfirmModal').classList.contains('hidden');
+        if (!isModalOpen && appState.gasWebhookUrl) {
+          loadRequestsFromGas(true);
+        }
+      }, 10000);
     }
 
     // ==================== INITIALIZATION ====================
@@ -1461,7 +1567,6 @@
       loadSettingsIntoInputs();
       recalculateCostPreview();
       renderUserRequestsTable();
-      renderTelegramLogs();
       renderUnitMasterTable();
       renderHolidaysList();
       renderAdminDashboardAndTable();
@@ -1470,8 +1575,9 @@
       renderTermsTable();
       renderServiceTermsOnUserPortal();
 
-      // ดึงข้อมูลล่าสุดจาก Google Sheets ทันทีที่เปิดใช้งานเว็บ
-      loadRequestsFromGas();
+      // ดึงข้อมูลล่าสุดจาก Google Sheets ทันทีที่เปิดเว็บ และเริ่ม Real-time Polling
+      loadRequestsFromGas(false);
+      startRealTimeSync();
     }
 
     function triggerDatePicker() {
@@ -1500,9 +1606,10 @@
         return;
       }
 
+      const checkedValues = getSelectedZones();
       container.innerHTML = appState.zones.map((zone) => `
         <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 hover:border-sky-500 hover:bg-sky-50/20 cursor-pointer transition-all duration-150">
-          <input type="checkbox" name="userRequestZones" value="${zone}" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500" onchange="recalculateCostPreview()">
+          <input type="checkbox" name="userRequestZones" value="${zone}" ${checkedValues.includes(zone) ? 'checked' : ''} class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500" onchange="recalculateCostPreview()">
           <span class="font-medium text-slate-800">${zone}</span>
         </label>
       `).join('');
@@ -2189,7 +2296,7 @@
         actionType = "NEW_REQUEST";
       }
 
-      saveAppState();
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) {}
       syncToGasIfConfigured(actionType, payloadData);
 
       resetRequestForm();
@@ -2253,33 +2360,12 @@
       req.status = 'CANCELLED';
       recalculateDuplicatesAcrossAll();
       
-      saveAppState();
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) {}
       syncToGasIfConfigured("CANCEL_REQUEST", req);
 
       renderUserRequestsTable();
       renderAdminDashboardAndTable();
       renderInvoices();
-    }
-
-    function renderTelegramLogs() {
-      const container = document.getElementById('telegramLogContainer');
-      if (!container) return;
-
-      if (appState.telegramLogs.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-6 text-slate-400">
-            ยังไม่มีประวัติการแจ้งเตือน Telegram
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = appState.telegramLogs.map(item => `
-        <div class="space-y-1 border-b border-slate-100 pb-2">
-          <div class="text-[10px] text-slate-400">เวลาส่ง Webhook: ${item.time}</div>
-          ${item.html}
-        </div>
-      `).join('');
     }
 
     // ==================== RENDER USER REQUESTS TABLE ====================
@@ -2531,7 +2617,7 @@
     }
 
     function switchSubTab(subTab) {
-      const subTabs = ['general', 'sync', 'backup', 'sysinfo'];
+      const subTabs = ['general', 'sync', 'backup'];
       subTabs.forEach(s => {
         const btn = document.getElementById('subTabBtn' + s.charAt(0).toUpperCase() + s.slice(1));
         const view = document.getElementById('subTab' + s.charAt(0).toUpperCase() + s.slice(1));
@@ -2543,7 +2629,6 @@
           view.classList.add('hidden');
         }
       });
-      if (subTab === 'sysinfo') renderTelegramLogs();
     }
 
     // ==================== DASHBOARD & REQUESTS ====================
@@ -2633,7 +2718,7 @@
       req.status = newStatus;
       recalculateDuplicatesAcrossAll();
       
-      saveAppState();
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) {}
       if (newStatus === 'CANCELLED') {
         syncToGasIfConfigured("CANCEL_REQUEST", req);
       } else {
@@ -2650,7 +2735,9 @@
       openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบคำขอรหัส "${id}" ออกจากระบบถาวร?`, function() {
         appState.requests = appState.requests.filter(r => r.id !== id);
         recalculateDuplicatesAcrossAll();
-        saveAppState();
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) {}
+        syncToGasIfConfigured("DELETE_REQUEST", { id: id });
+
         renderUserRequestsTable();
         renderAdminDashboardAndTable();
         renderAdminRequestsTable();
@@ -2791,6 +2878,24 @@
           `;
         }).join('');
       }
+    }
+
+    function exportInvoiceCsv() {
+      const activeReqs = getFilteredInvoiceRequests();
+      const headers = ['รหัสคำขอ', 'วันที่ใช้บริการ', 'ยูนิต', 'บริษัท', 'ผู้ขอใช้บริการ', 'โซน', 'ช่วงเวลา', 'ชั่วโมง', 'ยอดเงิน'];
+      const rows = activeReqs.map(r => [
+        r.id,
+        r.date,
+        r.unitNo,
+        `"${r.company.replace(/"/g, '""')}"`,
+        `"${r.requester.replace(/"/g, '""')}"`,
+        `"${(r.zones || []).join('; ')}"`,
+        `${formatHour(r.startHour)}-${formatHour(r.endHour)}`,
+        r.totalHours,
+        r.totalCost
+      ]);
+      const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      triggerFileDownloadOrPreview('OT_AIR_Invoice.csv', csvContent, 'text/csv;charset=utf-8;');
     }
 
     // ==================== DYNAMIC RATES ====================
@@ -3092,9 +3197,7 @@
             saveAppState();
             initAppUI();
           }
-        } catch (err) {
-          // fail safe
-        }
+        } catch (err) {}
         event.target.value = '';
       };
       reader.readAsText(file, 'UTF-8');
@@ -3111,9 +3214,7 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-      } catch (e) {
-        // fail safe
-      }
+      } catch (e) {}
       document.getElementById('dataPreviewModalTitle').textContent = `📄 ข้อมูลไฟล์: ${filename}`;
       document.getElementById('dataPreviewTextarea').value = content;
       const modal = document.getElementById('dataPreviewModal');
@@ -3152,7 +3253,6 @@
       appState.gasWebhookUrl = document.getElementById('gasWebhookUrlInput').value.trim();
 
       saveAppState();
-      renderTelegramLogs();
     }
 
     function copyGasUrlToClipboard() {
@@ -3165,45 +3265,39 @@
       }
     }
 
-    function testGasConnection() {
+    async function testGasConnection() {
       const btn = document.querySelector('[onclick="testGasConnection()"]');
       const warningBlock = document.getElementById('gasSyncWarningBlock');
       const statusHeader = document.getElementById('gasStatusHeader');
       const statusText = document.getElementById('gasStatusText');
-      const lastTestEl = document.getElementById('gasLastTestStatus');
-      const speedEl = document.getElementById('gasResponseTime');
-      const syncEl = document.getElementById('gasLastSyncTime');
 
       btn.disabled = true;
       btn.innerHTML = '⌛ กำลังตรวจสอบ...';
 
-      setTimeout(() => {
+      try {
+        const url = (appState.gasWebhookUrl || '').trim();
+        const res = await fetch(`${url}?action=PING&t=${Date.now()}`, { method: 'GET', redirect: 'follow' });
+        const json = await res.json();
+
+        if (json && json.status === 'connected') {
+          warningBlock.className = 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center justify-between gap-3';
+          statusHeader.textContent = 'เชื่อมต่อสำเร็จ (' + (json.version || 'v3.4.0') + ')';
+          statusHeader.className = 'text-emerald-900 font-bold';
+          statusText.textContent = json.message || 'เชื่อมต่อกับ Google Sheets APIs สำเร็จและพร้อมทำ Cloud Real-time Sync';
+          statusText.className = 'text-emerald-700 mt-0.5';
+        } else {
+          throw new Error('Invalid response');
+        }
+      } catch (err) {
+        warningBlock.className = 'p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3';
+        statusHeader.textContent = 'เชื่อมต่อไม่สำเร็จ';
+        statusHeader.className = 'text-red-900 font-bold';
+        statusText.textContent = 'ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"';
+        statusText.className = 'text-red-700 mt-0.5';
+      } finally {
         btn.disabled = false;
         btn.innerHTML = '🔍 ทดสอบการเชื่อมต่อ';
-
-        const url = (appState.gasWebhookUrl || '').trim();
-        const works = url.length > 5;
-
-        if (works) {
-          warningBlock.className = 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center justify-between gap-3';
-          statusHeader.textContent = 'เชื่อมต่อสำเร็จ';
-          statusHeader.className = 'text-emerald-900 font-bold';
-          statusText.textContent = 'เชื่อมต่อกับ Google Sheets APIs สำเร็จและพร้อมทำ Cloud Real-time Sync';
-          statusText.className = 'text-emerald-700 mt-0.5';
-          const nowStr = new Date().toLocaleTimeString('th-TH');
-          lastTestEl.textContent = nowStr + ' (เชื่อมต่อสำเร็จ)';
-          speedEl.textContent = (Math.floor(Math.random() * 50) + 120) + ' ms';
-          if (syncEl) syncEl.textContent = nowStr + ' (' + formatThaiDate(new Date().toISOString().split('T')[0]) + ')';
-        } else {
-          warningBlock.className = 'p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3';
-          statusHeader.textContent = 'เชื่อมต่อไม่สำเร็จ';
-          statusHeader.className = 'text-red-900 font-bold';
-          statusText.textContent = 'ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"';
-          statusText.className = 'text-red-700 mt-0.5';
-          lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (ไม่สำเร็จ)';
-          speedEl.textContent = '- ms';
-        }
-      }, 700);
+      }
     }
 
     function openPasswordModal() {
