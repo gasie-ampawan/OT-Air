@@ -503,32 +503,149 @@
           </div>
         </div>
 
-        <!-- Tab 5: Settings & Config -->
+        <!-- Tab 5: Settings & Config (with Sub-tabs) -->
         <div id="adminTabConfig" class="hidden space-y-6">
-          <div class="card p-6 space-y-5">
-            <h3 class="text-lg font-bold text-slate-900">⚙️ ตั้งค่าระบบ Telegram Webhook & Google Sheets</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div>
-                <label class="block font-semibold mb-1">Telegram Bot Token</label>
-                <input type="text" id="telegramTokenInput" class="input-field" value="7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8" onchange="saveGeneralSettings()">
+          <!-- Sub-tab Navigation -->
+          <div class="flex flex-wrap border-b border-slate-200 gap-1">
+            <button type="button" id="subTabBtnGeneral" class="px-4 py-2.5 text-xs font-bold border-b-2 border-sky-600 text-sky-700" onclick="switchSubTab('general')">
+              ⚙️ ทั่วไป & Telegram
+            </button>
+            <button type="button" id="subTabBtnSync" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sync')">
+              ☁️ สถานะ & ซิงค์ (Apps Script)
+            </button>
+            <button type="button" id="subTabBtnBackup" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('backup')">
+              📖 สำรองข้อมูล JSON
+            </button>
+            <button type="button" id="subTabBtnSysInfo" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sysinfo')">
+              🧬 ข้อมูลระบบ
+            </button>
+          </div>
+
+          <!-- Sub-tab 1: General & Telegram -->
+          <div id="subTabGeneral" class="space-y-6">
+            <div class="card p-6 space-y-5">
+              <div class="border-b border-slate-100 pb-3">
+                <h4 class="text-base font-bold text-slate-900">⚙️ ตั้งค่า Telegram & รหัสผ่านเจ้าหน้าที่</h4>
+                <p class="text-xs text-slate-500">จัดการข้อมูล Bot Webhook และความปลอดภัย</p>
               </div>
-              <div>
-                <label class="block font-semibold mb-1">Group Chat ID</label>
-                <input type="text" id="telegramChatIdInput" class="input-field" value="-100310351268" onchange="saveGeneralSettings()">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-semibold mb-1">Telegram Bot Token</label>
+                  <input type="text" id="telegramTokenInput" class="input-field" value="7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8" onchange="saveGeneralSettings()">
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1">Group Chat ID</label>
+                  <input type="text" id="telegramChatIdInput" class="input-field" value="-100310351268" onchange="saveGeneralSettings()">
+                </div>
+                <div class="sm:col-span-2 flex items-center gap-2 pt-1">
+                  <input type="checkbox" id="enableTelegramCheck" class="w-4 h-4 rounded text-sky-600 border-slate-300" onchange="saveGeneralSettings()" checked>
+                  <label for="enableTelegramCheck" class="font-semibold text-slate-800 text-xs">เปิดใช้งานการแจ้งเตือนไปยัง Telegram</label>
+                </div>
               </div>
-              <div class="sm:col-span-2">
-                <label class="block font-semibold mb-1">Web App URL (Google Apps Script)</label>
-                <input type="url" id="gasWebhookUrlInput" class="input-field font-mono" value="" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGeneralSettings()">
+            </div>
+          </div>
+
+          <!-- Sub-tab 2: Google Apps Script Cloud Sync -->
+          <div id="subTabSync" class="hidden space-y-6">
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <div class="ml-1 text-xs">
+                <strong class="block text-emerald-900">ระบบบันทึกอัตโนมัติทำงานอยู่</strong>
+                <p class="text-emerald-700 mt-0.5">ทุกการเพิ่ม แก้ไข ลบ จะถูกบันทึกและส่งขึ้น Google Sheets & Drive อัตโนมัติ</p>
               </div>
             </div>
 
-            <!-- Health Check / Ping Button -->
-            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 text-xs">
-              <div>
-                <div class="font-bold text-slate-800" id="gasStatusHeader">สถานะการเชื่อมต่อ: รอการทดสอบ</div>
-                <div class="text-[11px] text-slate-500" id="gasStatusText">กดปุ่มทดสอบเพื่อตรวจสอบการเชื่อมต่อกับ Google Apps Script</div>
+            <div class="card p-6 space-y-5">
+              <h4 class="text-base font-bold text-slate-900">เชื่อมต่อตาราง Google Sheets (Google Apps Script)</h4>
+
+              <div id="gasSyncWarningBlock" class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 text-xs">
+                <div>
+                  <strong class="text-slate-800 block" id="gasStatusHeader">สถานะการเชื่อมต่อ: รอการทดสอบ</strong>
+                  <p class="text-slate-500 mt-0.5" id="gasStatusText">วางลิงก์ Web App URL ด้านล่างและกดทดสอบการเชื่อมต่อ</p>
+                </div>
+                <button type="button" class="btn btn-secondary text-xs bg-white" onclick="testGasConnection()">🔍 ทดสอบการเชื่อมต่อ</button>
               </div>
-              <button type="button" class="btn btn-secondary text-xs" onclick="testGasConnection()">🔍 ทดสอบการเชื่อมต่อ (Ping)</button>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <label for="gasWebhookUrlInput" class="text-xs font-semibold text-slate-700">Web App URL (Google Apps Script)</label>
+                  <button type="button" class="text-sky-600 text-xs hover:underline font-semibold" onclick="copyGasUrlToClipboard()">📋 คัดลอก</button>
+                </div>
+                <input type="url" id="gasWebhookUrlInput" class="input-field font-mono text-xs text-slate-800" value="https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF5OIibrxKfb97KJSUMuvgKo7x_0NJ1RsBi_4g4GL5S6jPZAuUDLwj/exec" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGeneralSettings()">
+                <button type="button" class="btn btn-primary text-xs" onclick="saveGeneralSettings()">💾 บันทึก URL</button>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <span class="text-[10px] text-slate-500 block">โหมดซิงค์</span>
+                  <strong class="text-xs text-slate-800">เรียลไทม์ (Cloud Sync)</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <span class="text-[10px] text-slate-500 block">เวอร์ชันสคริปต์</span>
+                  <strong class="text-xs text-slate-800">v3.4.0</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <span class="text-[10px] text-slate-500 block">ตรวจสอบล่าสุด</span>
+                  <strong id="gasLastTestStatus" class="text-xs text-slate-800">ยังไม่มีการทดสอบ</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-tab 3: Backup & Restore JSON (Enhanced) -->
+          <div id="subTabBackup" class="hidden space-y-6">
+            <div class="card p-6 space-y-5">
+              <div class="border-b border-slate-100 pb-3">
+                <h4 class="text-base font-bold text-slate-900">📖 สำรองข้อมูลและกู้คืนด้วยไฟล์ JSON (JSON Backup & Restore)</h4>
+                <p class="text-xs text-slate-500">ส่งออกข้อมูลสถานะระบบทั้งหมด (ยูนิต, โซน, เรทราคา, วันหยุด, รายการคำขอ) เป็นไฟล์ `.json` หรือกู้คืนข้อมูลกลับเข้าสู่ระบบ</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Export Box -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div class="font-bold text-slate-800 text-sm">💾 1. สำรองข้อมูล (Export JSON Backup)</div>
+                  <p class="text-xs text-slate-500">ดาวน์โหลดไฟล์สำรองข้อมูลปัจจุบันลงในคอมพิวเตอร์ หรือคัดลอกโค้ด JSON ไปเก็บไว้</p>
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary text-xs" onclick="exportBackupJson()">📥 ดาวน์โหลดไฟล์ .JSON</button>
+                    <button type="button" class="btn btn-secondary text-xs" onclick="previewCurrentJson()">👁️ ดูข้อมูล JSON ปัจจุบัน</button>
+                  </div>
+                </div>
+
+                <!-- Import Box -->
+                <div class="p-4 rounded-xl bg-sky-50/50 border border-sky-200 space-y-3">
+                  <div class="font-bold text-sky-900 text-sm">♻️ 2. กู้คืนข้อมูล (Import JSON Restore)</div>
+                  <p class="text-xs text-slate-600">เลือกไฟล์ `.json` ที่เคยสำรองไว้เพื่อนำข้อมูลทั้งหมดกลับเข้าสู่ระบบทันที</p>
+                  <div class="flex items-center gap-2">
+                    <label class="btn btn-success text-xs cursor-pointer">
+                      📂 เลือกไฟล์ .JSON เพื่อกู้คืน
+                      <input type="file" id="jsonRestoreInput" accept=".json,application/json" class="hidden" onchange="handleRestoreJson(event)">
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live JSON Inspector / Manual Paste Restore -->
+              <div id="jsonInspectorBox" class="hidden space-y-3 pt-3 border-t border-slate-200">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold text-slate-700">โค้ดข้อมูล JSON ของระบบ (สามารถคัดลอก หรือวางโค้ด JSON เพื่อกู้คืนได้):</label>
+                  <button type="button" class="text-xs text-sky-600 font-semibold hover:underline" onclick="copyJsonInspector()">📋 คัดลอก JSON</button>
+                </div>
+                <textarea id="jsonInspectorTextarea" rows="8" class="input-field font-mono text-xs" placeholder="วางข้อมูล JSON ที่นี่..."></textarea>
+                <div class="flex justify-end gap-2">
+                  <button type="button" class="btn btn-secondary text-xs" onclick="document.getElementById('jsonInspectorBox').classList.add('hidden')">ซ่อนหน้าต่าง</button>
+                  <button type="button" class="btn btn-warning text-xs font-bold" onclick="restoreFromTextarea()">⚡ กู้คืนข้อมูลจากข้อความ JSON ด้านบน</button>
+                </div>
+              </div>
+
+              <div id="jsonBackupFeedback" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold"></div>
+            </div>
+          </div>
+
+          <!-- Sub-tab 4: System Info & Logs -->
+          <div id="subTabSysInfo" class="hidden space-y-6">
+            <div class="card p-6 space-y-4">
+              <h4 class="text-base font-bold text-slate-900">🧬 ข้อมูลของระบบ (Diagnostics & Webhook Logs)</h4>
+              <p class="text-xs text-slate-500">ระบบคีย์บันทึกข้อมูลแบบ Cloud Serverless ประสานงานผ่าน Google Apps Script API อัตโนมัติ</p>
             </div>
           </div>
         </div>
@@ -637,6 +754,10 @@
         { id: 'rate-4', name: 'วันอาทิตย์ (ทั้งวัน)', dayCondition: 'SUNDAY', startTime: 6, endTime: 24, rate: 250 }
       ],
       holidays: [{ date: '2026-04-13', name: 'วันสงกรานต์' }],
+      telegramToken: '7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8',
+      telegramChatId: '-100310351268',
+      enableTelegram: true,
+      gasWebhookUrl: 'https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF5OIibrxKfb97KJSUMuvgKo7x_0NJ1RsBi_4g4GL5S6jPZAuUDLwj/exec',
       requests: []
     };
 
@@ -767,6 +888,24 @@
       if (tabName === 'requestsList') renderAdminRequestsTable();
       if (tabName === 'rates') renderAdminZonesTable();
       if (tabName === 'units') renderUnitMasterTable();
+      if (tabName === 'config') switchSubTab('sync');
+    }
+
+    function switchSubTab(subTab) {
+      const subTabs = ['general', 'sync', 'backup', 'sysinfo'];
+      subTabs.forEach(s => {
+        const btn = document.getElementById('subTabBtn' + s.charAt(0).toUpperCase() + s.slice(1));
+        const view = document.getElementById('subTab' + s.charAt(0).toUpperCase() + s.slice(1));
+        if (btn && view) {
+          if (s === subTab) {
+            btn.className = 'px-4 py-2.5 text-xs font-bold border-b-2 border-sky-600 text-sky-700';
+            view.classList.remove('hidden');
+          } else {
+            btn.className = 'px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800';
+            view.classList.add('hidden');
+          }
+        }
+      });
     }
 
     function renderAdminDashboard() {
@@ -880,13 +1019,127 @@
     }
 
     function saveGeneralSettings() {
+      appState.telegramToken = document.getElementById('telegramTokenInput').value.trim();
+      appState.telegramChatId = document.getElementById('telegramChatIdInput').value.trim();
+      appState.enableTelegram = document.getElementById('enableTelegramCheck').checked;
+      appState.gasWebhookUrl = document.getElementById('gasWebhookUrlInput').value.trim();
       saveAppState();
+    }
+
+    function copyGasUrlToClipboard() {
+      const urlEl = document.getElementById('gasWebhookUrlInput');
+      urlEl.select();
+      navigator.clipboard.writeText(urlEl.value);
+    }
+
+    // ==================== JSON BACKUP & RESTORE FUNCTIONS ====================
+    function showBackupFeedback(msg, isError = false) {
+      const fb = document.getElementById('jsonBackupFeedback');
+      if (!fb) return;
+      fb.textContent = msg;
+      fb.className = isError
+        ? 'p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold'
+        : 'p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold';
+      fb.classList.remove('hidden');
+      setTimeout(() => fb.classList.add('hidden'), 5000);
+    }
+
+    function exportBackupJson() {
+      const backupPayload = {
+        ...appState,
+        backupMetadata: {
+          exportedAt: new Date().toISOString(),
+          version: 'v3.4.0',
+          system: 'OT AIR'
+        }
+      };
+      const jsonStr = JSON.stringify(backupPayload, null, 2);
+      const dateStamp = new Date().toISOString().split('T')[0];
+      const filename = `OT_AIR_Backup_${dateStamp}.json`;
+
+      const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showBackupFeedback(`✅ ดาวน์โหลดไฟล์สำรองข้อมูล (${filename}) เรียบร้อยแล้ว`);
+    }
+
+    function previewCurrentJson() {
+      const box = document.getElementById('jsonInspectorBox');
+      const ta = document.getElementById('jsonInspectorTextarea');
+      ta.value = JSON.stringify(appState, null, 2);
+      box.classList.remove('hidden');
+    }
+
+    function copyJsonInspector() {
+      const ta = document.getElementById('jsonInspectorTextarea');
+      ta.select();
+      navigator.clipboard.writeText(ta.value);
+      showBackupFeedback('📋 คัดลอกโค้ด JSON ลงในคลิปบอร์ดเรียบร้อยแล้ว');
+    }
+
+    function applyRestoredData(parsed) {
+      if (!parsed || typeof parsed !== 'object') {
+        throw new Error('โครงสร้างข้อมูลไม่ใช่ JSON Object ที่ถูกต้อง');
+      }
+      appState = {
+        ...defaultState,
+        ...parsed,
+        passwords: { ...defaultState.passwords, ...(parsed.passwords || {}) },
+        units: Array.isArray(parsed.units) ? parsed.units : defaultState.units,
+        zones: Array.isArray(parsed.zones) ? parsed.zones : defaultState.zones,
+        ratesList: Array.isArray(parsed.ratesList) ? parsed.ratesList : defaultState.ratesList,
+        holidays: Array.isArray(parsed.holidays) ? parsed.holidays : defaultState.holidays,
+        requests: Array.isArray(parsed.requests) ? parsed.requests : []
+      };
+      saveAppState();
+      init();
+      renderAdminDashboard();
+      renderAdminRequestsTable();
+      renderAdminZonesTable();
+      renderUnitMasterTable();
+    }
+
+    function handleRestoreJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          applyRestoredData(parsed);
+          showBackupFeedback(`♻️ กู้คืนข้อมูลจากไฟล์ "${file.name}" สำเร็จเรียบร้อยแล้ว!`);
+        } catch (err) {
+          showBackupFeedback(`❌ ไม่สามารถกู้คืนข้อมูลได้: ไฟล์ JSON ไม่ถูกต้อง (${err.message})`, true);
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function restoreFromTextarea() {
+      const raw = document.getElementById('jsonInspectorTextarea').value.trim();
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        applyRestoredData(parsed);
+        showBackupFeedback('♻️ กู้คืนข้อมูลจากข้อความโค้ด JSON สำเร็จเรียบร้อยแล้ว!');
+      } catch (err) {
+        showBackupFeedback(`❌ รูปแบบข้อความ JSON ไม่ถูกต้อง: ${err.message}`, true);
+      }
     }
 
     async function testGasConnection() {
       const url = document.getElementById('gasWebhookUrlInput').value.trim();
       const statusHeader = document.getElementById('gasStatusHeader');
       const statusText = document.getElementById('gasStatusText');
+      const lastTestEl = document.getElementById('gasLastTestStatus');
 
       if (!url) {
         alert('กรุณากรอก Web App URL');
@@ -900,6 +1153,7 @@
         if (data.status === 'connected') {
           statusHeader.textContent = 'สถานะ: ✅ เชื่อมต่อสำเร็จ!';
           statusText.textContent = `เวอร์ชัน: ${data.version} | ${data.message}`;
+          if (lastTestEl) lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (สำเร็จ)';
         } else {
           statusHeader.textContent = 'สถานะ: ⚠️ การตอบกลับไม่สมบูรณ์';
           statusText.textContent = JSON.stringify(data);
@@ -907,6 +1161,7 @@
       } catch (err) {
         statusHeader.textContent = 'สถานะ: ❌ เชื่อมต่อไม่สำเร็จ';
         statusText.textContent = 'กรุณาตรวจสอบว่าเลือก Who has access เป็น "Anyone" ในการ Deploy Web App แล้วหรือไม่';
+        if (lastTestEl) lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (ไม่สำเร็จ)';
       }
     }
 
@@ -1239,6 +1494,9 @@
       const today = '2026-11-14';
       document.getElementById('requestDateInput').value = today;
       document.getElementById('requestDateInputDisplay').value = formatThaiDate(today);
+      if (appState.gasWebhookUrl) {
+        document.getElementById('gasWebhookUrlInput').value = appState.gasWebhookUrl;
+      }
       populateUnitDropdowns();
       renderUserZonesCheckboxes();
       renderUserRatesTable();
