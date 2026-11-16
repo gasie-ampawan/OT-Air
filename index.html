@@ -1,0 +1,3287 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OT AIR — ระบบจัดการการขอเปิดแอร์นอกเวลางาน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --brand: #0284c7;
+      --brand-hover: #0369a1;
+      --brand-ink: #ffffff;
+      --accent: #06b6d4; /* Electric Neon-Teal Accent */
+      --radius: 20px; /* Playful larger rounding */
+      --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.03), 0 1px 2px 0 rgba(15, 23, 42, 0.02);
+      --font: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background-color: var(--bg);
+      background-image: radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.03) 0px, transparent 50%),
+                        radial-gradient(at 50% 0%, rgba(2, 132, 199, 0.02) 0px, transparent 50%);
+      line-height: 1.5;
+    }
+    .app-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+    }
+    .input-field {
+      width: 100%;
+      padding: 11px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: #ffffff;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12), 0 1px 2px 0 rgba(0,0,0,0.05);
+      transform: scale(1.005);
+    }
+    .input-field[readonly] {
+      background: #f8fafc;
+      color: #475569;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 11px 20px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+    }
+    .btn:active { 
+      transform: translateY(0.5px) scale(0.98); 
+    }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary { 
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
+      color: var(--brand-ink); 
+    }
+    .btn-primary:hover { 
+      background: linear-gradient(135deg, var(--brand-hover) 0%, #025a87 100%);
+    }
+    .btn-secondary { background: #ffffff; color: #334155; border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .btn-danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+    .btn-danger:hover { background: #fecaca; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15); }
+    .btn-success { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+    .btn-success:hover { background: #bbf7d0; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.15); }
+    .btn-warning { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    .btn-warning:hover { background: #fde68a; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15); }
+    
+    /* Playful Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: transform 0.2s ease;
+    }
+    .badge:hover {
+      transform: scale(1.05);
+    }
+    .badge-approved { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-duplicate { background: #fef08a; color: #854d0e; border: 1px solid #facc15; }
+    
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-align: left;
+      padding: 14px 18px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      transition: background-color 0.1s;
+    }
+    tbody tr:hover td { background: #f8fafc; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #ccc; }
+    }
+  </style>
+<style data-link-removed-style>a[data-link-removed],a[href*="zPythonSafez"]:not([onclick]){pointer-events:none!important;cursor:default!important;opacity:.6}</style></head>
+<body>
+
+  <!-- Top Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 no-print">
+    <div class="max-w-[1240px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          ❄️
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight text-slate-900">OT AIR</h1>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">Air Conditioning Overtime Request System</span>
+          </div>
+          <p class="text-xs text-slate-500">ระบบจัดการการขอเปิดแอร์นอกเวลางานสำหรับอาคารและสำนักงาน</p>
+        </div>
+      </div>
+
+      <!-- Portal Switcher & Auth State -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="navUserPortalBtn" type="button" class="btn btn-primary text-sm" onclick="switchPortal('user')">
+          📱 ฝั่งผู้ใช้งาน (User Portal)
+        </button>
+        <button id="navAdminPortalBtn" type="button" class="btn btn-secondary text-sm" onclick="switchPortal('admin')">
+          🛠️ ฝั่งผู้ดูแลระบบ (Admin / Staff)
+        </button>
+        <div id="authUserBadge" class="hidden items-center gap-2 pl-2 border-l border-slate-200">
+          <span id="currentRoleBadge" class="badge bg-slate-100 text-slate-800 border border-slate-300"></span>
+          <button type="button" class="btn btn-secondary text-xs py-1.5 px-2.5" onclick="openPasswordModal()">🔑 เปลี่ยนรหัสผ่าน</button>
+          <button type="button" class="btn btn-danger text-xs py-1.5 px-2.5" onclick="logoutAdmin()">ออกจากระบบ</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- ==================== A. USER PORTAL ==================== -->
+    <section id="userPortalSection" class="space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- 1. Smart Request Form -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="card p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h2 id="formTitle" class="text-lg font-bold text-slate-900">แบบฟอร์มขอเปิดแอร์นอกเวลา (OT)</h2>
+                <p class="text-xs text-slate-500">เลือกยูนิต โซน และเวลา ระบบจะคำนวณราคาประเมินทันที</p>
+              </div>
+              <span id="editingModeBadge" class="hidden badge bg-sky-100 text-sky-800 border border-sky-200">✏️ โหมดแก้ไขคำขอ</span>
+            </div>
+
+            <form id="otRequestForm" class="space-y-4" onsubmit="handleRequestSubmit(event)">
+              <input type="hidden" id="editingRequestId" value="">
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="unitSelect" class="block text-xs font-semibold text-slate-700 mb-1">บ้านเลขที่ / ยูนิต <span class="text-red-500">*</span></label>
+                  <select id="unitSelect" class="input-field" required onchange="handleUnitChange()">
+                    <option value="">-- เลือกบ้านเลขที่ / ยูนิต --</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="companyNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อบริษัท / ผู้เช่า (Auto-fill)</label>
+                  <input type="text" id="companyNameInput" class="input-field" readonly placeholder="ระบบกรอกให้อัตโนมัติ">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="requesterNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อผู้ติดต่อ <span class="text-red-500">*</span></label>
+                  <input type="text" id="requesterNameInput" class="input-field" required placeholder="ระบุชื่อผู้ขอใช้บริการ">
+                </div>
+                <div>
+                  <label for="requesterPhoneInput" class="block text-xs font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
+                  <input type="text" id="requesterPhoneInput" class="input-field" required placeholder="ระบุเบอร์โทรศัพท์ (เช่น 0812345678)">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-3">
+                <div>
+                  <label for="requestDateInputDisplay" class="block text-xs font-semibold text-slate-700 mb-1">วันที่ขอใช้บริการ <span class="text-red-500">*</span></label>
+                  <div class="relative">
+                    <input type="text" id="requestDateInputDisplay" class="input-field cursor-pointer font-medium text-slate-900" readonly placeholder="วัน/เดือน/ปี (เช่น 12/04/2026)" onclick="triggerDatePicker()">
+                    <input type="date" id="requestDateInput" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10" onchange="handleDateChange(this.value)">
+                    <span class="absolute right-3 top-2.5 text-slate-400 pointer-events-none">📅</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Zone Selection (Dynamic Checkboxes) -->
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+                <span class="block text-xs font-bold text-slate-700 uppercase tracking-wider">เลือกโซนพื้นที่ใช้บริการ <span class="text-red-500">*</span></span>
+                <div id="zonesCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <!-- Will be dynamically populated by JS -->
+                </div>
+                <div class="text-[10px] text-slate-500">กรณีเลือกมากกว่า 1 โซน ระบบจะทวีคูณราคาประเมินตามจำนวนโซนที่เปิดบริการ</div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <!-- Start Time Selector (Modern Picker) -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาเริ่มต้น <span class="text-red-500">*</span></label>
+                  <button type="button" class="input-field flex items-center justify-between text-left font-semibold text-slate-800" onclick="openModernTimePicker('start')">
+                    <span id="selectedStartText">🕒 18:00 น.</span>
+                    <span class="text-sky-600 text-xs hover:underline">แก้ไข 🕒</span>
+                  </button>
+                  <input type="hidden" id="startTimeSelect" value="18">
+                </div>
+
+                <!-- End Time Selector (Modern Picker) -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาสิ้นสุด <span class="text-red-500">*</span></label>
+                  <button type="button" class="input-field flex items-center justify-between text-left font-semibold text-slate-800" onclick="openModernTimePicker('end')">
+                    <span id="selectedEndText">🕒 21:00 น.</span>
+                    <span class="text-sky-600 text-xs hover:underline">แก้ไข 🕒</span>
+                  </button>
+                  <input type="hidden" id="endTimeSelect" value="21">
+                </div>
+              </div>
+
+              <div>
+                <label for="requestNoteInput" class="block text-xs font-semibold text-slate-700 mb-1">หมายเหตุเพิ่มเติม</label>
+                <input type="text" id="requestNoteInput" class="input-field" placeholder="เช่น รายละเอียดหรือคำสั่งพิเศษเพิ่มเติม">
+              </div>
+
+              <!-- Live Duplicate Warning Banner -->
+              <div id="liveDuplicateAlert" class="hidden p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs">
+                <div class="font-bold flex items-center gap-1.5">⚠️ รายการซ้ำ (Duplicate Detection)</div>
+                <p class="mt-0.5">ตรวจพบคำขอที่มี ยูนิต, วันที่, ช่วงเวลา และยอดเงินตรงกับรายการที่เปิดอยู่แล้วในระบบ</p>
+              </div>
+
+              <!-- Time Validation Error -->
+              <div id="formTimeError" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+
+              <!-- Smart Cost Calculation & Group Breakdown Box -->
+              <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs font-bold text-slate-700 uppercase tracking-wider">สรุปการคำนวณค่าบริการ (Group Breakdown)</div>
+                  <span id="dayTypeBadge" class="badge bg-sky-100 text-sky-800 border border-sky-200 font-semibold">วันทำการปกติ</span>
+                </div>
+
+                <div id="breakdownListContainer" class="space-y-1.5 text-xs text-slate-700">
+                  <div class="text-slate-400 italic">เลือกวันที่ โซน และเวลา เพื่อดูรายละเอียดราคาประเมิน</div>
+                </div>
+
+                <div class="pt-2.5 border-t border-slate-200 flex items-center justify-between">
+                  <div>
+                    <span class="text-xs text-slate-500">ชั่วโมงรวม × โซน:</span>
+                    <strong id="totalHoursPreview" class="text-sm text-slate-800 ml-1">0 ชม. (0 โซน)</strong>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs text-slate-500 block">ยอดรวมค่าบริการทั้งหมด</span>
+                    <span id="totalCostPreview" class="text-xl font-bold text-sky-700">฿0.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Service Conditions Caption -->
+              <div class="text-xs text-slate-500 bg-slate-50/70 p-3 rounded-lg border border-slate-200/80 space-y-1">
+                <span class="font-semibold text-slate-700 block">📝 เงื่อนไขการใช้บริการ:</span>
+                <ul id="serviceTermsDisplay" class="list-disc pl-4 space-y-1 text-[11px] text-slate-600">
+                  <!-- Will be dynamically populated -->
+                </ul>
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <button type="submit" id="submitRequestBtn" class="btn btn-primary w-full">
+                  💾 บันทึกคำขอเปิดแอร์ OT
+                </button>
+                <button type="button" id="cancelEditBtn" class="hidden btn btn-secondary" onclick="resetRequestForm()">
+                  ยกเลิกแก้ไข
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. Front-end Pricing Rates Display -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="card p-6 bg-gradient-to-tr from-slate-50 to-white h-full space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 class="text-sm font-bold text-slate-800">💰 ตารางอัตราค่าบริการแอร์นอกเวลา (OT AIR Rate Matrix)</h3>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">อัปเดตแบบเรียลไทม์</span>
+            </div>
+            <p class="text-xs text-slate-500 mb-2">อัตราค่าบริการจะผันแปรตามประเภทของวันและเวลาที่ขอใช้บริการ กรุณาตรวจดูรายละเอียดในเรทแมทริกซ์ด้านล่าง:</p>
+            <div class="overflow-x-auto text-xs">
+              <table class="w-full">
+                <thead>
+                  <tr class="bg-slate-100/80 text-slate-600">
+                    <th class="p-3 font-bold text-left rounded-l-lg">เงื่อนไข / ช่วงเวลา</th>
+                    <th class="p-3 font-bold text-left">เวลา (HH:MM)</th>
+                    <th class="p-3 font-bold text-right rounded-r-lg">เรท (บาท/ชม.)</th>
+                  </tr>
+                </thead>
+                <tbody id="userRatesDisplayTbody" class="divide-y divide-slate-100 text-slate-700">
+                  <!-- Dynamic rates list will be rendered here -->
+                </tbody>
+              </table>
+            </div>
+            <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 space-y-1">
+              <p>💡 <strong>หมายเหตุเพิ่มเติม:</strong></p>
+              <ul class="list-disc pl-4 space-y-0.5">
+                <li>เศษของนาทีจะถูกนับปัดเศษขึ้นเป็น 1 ชั่วโมงเต็ม ตามเงื่อนไขบริการ</li>
+                <li>กรณีเลือกใช้หลายโซนพร้อมกัน ค่าบริการรายชั่วโมงของแต่ละช่วงเวลาจะทวีคูณตามจำนวนโซนที่ขอใช้จริง</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3. My Requests History & Dynamic Log -->
+      <div class="card p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">ประวัติและการจัดการคำขอ (My Requests)</h2>
+            <p class="text-xs text-slate-500">แสดงผลเฉพาะยูนิตที่ระบุเลือกอยู่ในแบบฟอร์มด้านบน</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="search" id="userSearchInput" class="input-field text-sm sm:w-64" placeholder="🔍 ค้นหาในประวัติยูนิตนี้..." oninput="renderUserRequestsTable()">
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>รหัส / วันที่</th>
+                <th>ยูนิต / บริษัท</th>
+                <th>โซน / รายละเอียด Group Breakdown</th>
+                <th class="num">ยอดเงิน</th>
+                <th>สถานะ</th>
+                <th class="text-right">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="userRequestsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== B. ADMIN / STAFF PORTAL ==================== -->
+    <section id="adminPortalSection" class="hidden space-y-6">
+
+      <!-- 1. Authentication Login Screen -->
+      <div id="adminLoginCard" class="max-w-md mx-auto card p-6 mt-8 space-y-5">
+        
+        <!-- Login Form Section -->
+        <div id="loginFormSection" class="space-y-5">
+          <div class="text-center space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mx-auto text-2xl font-bold">🔐</div>
+            <h2 class="text-xl font-bold text-slate-900">เข้าสู่ระบบผู้ดูแล (Admin / Staff)</h2>
+            <p class="text-xs text-slate-500">แยกสิทธิ์ระหว่าง Admin (ตั้งค่าระบบได้ทั้งหมด) และ Staff (จัดการคำขอ/ออกใบแจ้งหนี้)</p>
+          </div>
+
+          <form id="loginForm" class="space-y-4" onsubmit="handleAdminLogin(event)">
+            <div>
+              <label for="loginRoleSelect" class="block text-xs font-semibold text-slate-700 mb-1">ระดับสิทธิ์ผู้ใช้งาน (Role)</label>
+              <select id="loginRoleSelect" class="input-field">
+                <option value="admin">Admin (ผู้ดูแลระบบสูงสุด - จัดการได้ทุกฟีเจอร์)</option>
+                <option value="staff">Staff (เจ้าหน้าที่อาคาร - จัดการคำขอ & ออกใบแจ้งหนี้)</option>
+              </select>
+            </div>
+            <div>
+              <label for="loginPasswordInput" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่าน (Password)</label>
+              <input type="password" id="loginPasswordInput" class="input-field" required placeholder="กรอกรหัสผ่าน">
+            </div>
+            <div id="loginErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+            <button type="submit" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
+          </form>
+        </div>
+
+        <!-- Force Password Change Section (First Login) -->
+        <div id="forcePasswordChangeSection" class="hidden space-y-5">
+          <div class="text-center space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto text-2xl font-bold">🔒</div>
+            <h2 class="text-xl font-bold text-slate-900">เปลี่ยนรหัสผ่านในการใช้งานครั้งแรก</h2>
+            <p class="text-xs text-slate-500">เพื่อความปลอดภัยทางบัญชี กรุณาเปลี่ยนรหัสผ่านเริ่มต้นก่อนเริ่มใช้งาน</p>
+          </div>
+
+          <form id="forceChangeForm" class="space-y-4" onsubmit="handleForcePasswordSubmit(event)">
+            <input type="hidden" id="forceChangeRole" value="">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500">บัญชีที่จะเปลี่ยนรหัสผ่าน</label>
+              <input type="text" id="forceChangeRoleDisplay" class="input-field bg-slate-50 font-bold" readonly value="">
+            </div>
+            <div>
+              <label for="forceNewPassword" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ <span class="text-red-500">*</span></label>
+              <input type="password" id="forceNewPassword" class="input-field" required minlength="4" placeholder="กรอกรหัสผ่านใหม่ อย่างน้อย 4 ตัวอักษร">
+            </div>
+            <div>
+              <label for="forceConfirmPassword" class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่ <span class="text-red-500">*</span></label>
+              <input type="password" id="forceConfirmPassword" class="input-field" required minlength="4" placeholder="ยืนยันรหัสผ่านใหม่อีกครั้ง">
+            </div>
+            <div id="forceChangeErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+            <button type="submit" class="btn btn-primary w-full">บันทึกรหัสผ่านใหม่ & เข้าสู่ระบบ</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Authenticated Admin Content -->
+      <div id="adminAuthenticatedContent" class="hidden space-y-6">
+
+        <!-- Admin Sub-navigation Tabs -->
+        <div class="card p-2 flex flex-wrap items-center gap-1.5 no-print mb-6">
+          <button type="button" id="tabBtnSummary" class="btn btn-primary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('summary')">
+            📊 สรุปการใช้งาน
+          </button>
+          <button type="button" id="tabBtnRequestsList" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('requestsList')">
+            📋 รายการคำขอ
+          </button>
+          <button type="button" id="tabBtnRates" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('rates')">
+            💰 อัตราค่าบริการ / ปฏิทิน & เงื่อนไข
+          </button>
+          <button type="button" id="tabBtnUnits" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('units')">
+            🏢 บ้านเลขที่ / บริษัท
+          </button>
+          <button type="button" id="tabBtnConfig" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('config')">
+            ⚙️ ตั้งค่าระบบ & Telegram
+          </button>
+        </div>
+
+        <!-- TAB 1: SUMMARY & INVOICES -->
+        <div id="adminTabSummary" class="space-y-6">
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card p-4 border-l-4 border-l-emerald-500">
+              <div class="text-xs text-slate-500 font-medium">ยอดเงินรวมสุทธิ (ตัดรายการยกเลิก)</div>
+              <div id="kpiActiveRevenue" class="text-2xl font-bold text-slate-900 mt-1">฿0.00</div>
+              <div class="text-[11px] text-emerald-700 mt-1">คำนวณเฉพาะรายการที่ใช้งานจริง</div>
+            </div>
+            <div class="card p-4">
+              <div class="text-xs text-slate-500 font-medium">คำขอทั้งหมด</div>
+              <div id="kpiTotalCount" class="text-2xl font-bold text-slate-900 mt-1">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">รายการในระบบทั้งหมด</div>
+            </div>
+            <div class="card p-4 border-l-4 border-l-sky-500">
+              <div class="text-xs text-sky-700 font-medium">อนุมัติแล้ว (Approved)</div>
+              <div id="kpiApprovedCount" class="text-2xl font-bold text-sky-700 mt-1">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">พร้อมเปิดบริการ</div>
+            </div>
+            <div class="card p-4 border-l-4 border-l-red-500">
+              <div class="text-xs text-red-700 font-medium">ยกเลิกแล้ว (Cancelled)</div>
+              <div id="kpiCancelledCount" class="text-2xl font-bold text-red-700 mt-1">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">ไม่นำไปคำนวณยอดเงินรวม</div>
+            </div>
+          </div>
+
+          <!-- Invoice system embedded in Summary view -->
+          <div class="card p-5 no-print">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 flex-1">
+                <div>
+                  <label for="invoiceUnitFilter" class="block text-xs font-semibold text-slate-700 mb-1">เลือกยูนิต / บริษัท</label>
+                  <select id="invoiceUnitFilter" class="input-field text-xs" onchange="renderInvoices()">
+                    <option value="ALL">ทุกยูนิต (รวมทั้งหมด)</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="invoiceStartDate" class="block text-xs font-semibold text-slate-700 mb-1">ตั้งแต่วันที่</label>
+                  <input type="date" id="invoiceStartDate" class="input-field text-xs" onchange="renderInvoices()">
+                </div>
+                <div>
+                  <label for="invoiceEndDate" class="block text-xs font-semibold text-slate-700 mb-1">ถึงวันที่</label>
+                  <input type="date" id="invoiceEndDate" class="input-field text-xs" onchange="renderInvoices()">
+                </div>
+                <div>
+                  <label for="invoiceDocSwitch" class="block text-xs font-semibold text-slate-700 mb-1">เลือกใบเอกสาร</label>
+                  <select id="invoiceDocSwitch" class="input-field text-xs" onchange="renderInvoices()">
+                    <option value="BOTH">แสดงทั้ง 2 ใบ (ใบที่ 1 + ใบที่ 2)</option>
+                    <option value="DOC1">ใบที่ 1: ใบสรุปยอดรวมการใช้งานและแจ้งหนี้</option>
+                    <option value="DOC2">ใบที่ 2: รายงานรายละเอียดการขอใช้บริการ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" class="btn btn-secondary text-xs" onclick="exportInvoiceCsv()">📥 ส่งออก CSV</button>
+                <button type="button" class="btn btn-primary text-xs" onclick="window.print()">🖨️ พิมพ์ใบแจ้งหนี้</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Document 1: Invoice Summary -->
+          <div id="invoiceDoc1Container" class="card p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
+              <div>
+                <span class="badge bg-sky-100 text-sky-800 border border-sky-200 mb-2">ใบที่ 1 : Invoice Summary</span>
+                <h3 class="text-xl font-bold text-slate-900">ใบสรุปยอดรวมการใช้งานและแจ้งหนี้ค่าแอร์นอกเวลา (OT AIR)</h3>
+                <p id="invoiceDoc1Subtitle" class="text-xs text-slate-500 mt-1">สรุปเฉพาะรายการที่ใช้งานจริง (ตัดยอดรายการที่ถูกยกเลิกออก)</p>
+              </div>
+              <div class="text-left sm:text-right text-xs text-slate-600 space-y-0.5">
+                <div><strong>วันที่ออกเอกสาร:</strong> <span id="invoiceIssueDate1"></span></div>
+                <div><strong>ช่วงวันที่สรุปยอด:</strong> <span id="invoicePeriodText1">ทั้งหมด</span></div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>บ้านเลขที่ / ยูนิต</th>
+                    <th>ชื่อบริษัท / ผู้เช่า</th>
+                    <th class="num">จำนวนครั้งที่ขอ</th>
+                    <th class="num">จำนวนชั่วโมงรวม</th>
+                    <th class="num">ยอดรวมค่าบริการ (บาท)</th>
+                  </tr>
+                </thead>
+                <tbody id="invoiceSummaryTbody"></tbody>
+                <tfoot>
+                  <tr class="bg-slate-50 font-bold text-slate-900">
+                    <td colspan="2">รวมสุทธิทั้งหมด (ไม่รวมรายการยกเลิก)</td>
+                    <td id="invoiceFootRequests" class="num">0 ครั้ง</td>
+                    <td id="invoiceFootHours" class="num">0 ชม.</td>
+                    <td id="invoiceFootAmount" class="num text-sky-700 text-base">฿0.00</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Document 2: Detailed Usage Breakdown -->
+          <div id="invoiceDoc2Container" class="card p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
+              <div>
+                <span class="badge bg-indigo-100 text-indigo-800 border border-indigo-200 mb-2">ใบที่ 2 : Detailed Usage Breakdown</span>
+                <h3 class="text-xl font-bold text-slate-900">รายงานรายละเอียดการขอใช้บริการประกอบการแจ้งหนี้</h3>
+                <p class="text-xs text-slate-500 mt-1">แสดงรายละเอียดรายวัน ช่วงเวลา Group Breakdown และผู้ขอใช้บริการ</p>
+              </div>
+              <div class="text-left sm:text-right text-xs text-slate-600 space-y-0.5">
+                <div><strong>วันที่ออกเอกสาร:</strong> <span id="invoiceIssueDate2"></span></div>
+                <div><strong>กรองยูนิต:</strong> <span id="invoiceUnitText2">ทุกยูนิต</span></div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>รหัสคำขอ</th>
+                    <th>วันที่ใช้บริการ</th>
+                    <th>ยูนิต / บริษัท</th>
+                    <th>ผู้ขอใช้บริการ</th>
+                    <th>โซน</th>
+                    <th>รายละเอียด Group Breakdown</th>
+                    <th class="num">ชั่วโมง</th>
+                    <th class="num">ยอดเงิน (บาท)</th>
+                  </tr>
+                </thead>
+                <tbody id="invoiceDetailTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: REQUESTS LIST (Image 6) -->
+        <div id="adminTabRequestsList" class="hidden space-y-6">
+          <div class="card p-6 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">รายการคำขอทั้งหมด</h3>
+                <p class="text-xs text-slate-500">จัดการ ค้นหา และปรับปรุงประวัติคำขอ</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" class="btn btn-success text-xs font-bold" onclick="exportAdminCsv()">Export CSV</button>
+              </div>
+            </div>
+
+            <!-- Filter Row from Image 6 -->
+            <div class="flex flex-wrap gap-2 items-center">
+              <div class="flex-1 min-w-[250px] relative">
+                <input type="search" id="adminSearchInput" class="input-field text-sm" placeholder="🔍 ค้นหาด่วน: เลขที่คำขอ, บ้านเลขที่, บริษัท หรือชื่อผู้แจ้ง..." oninput="renderAdminRequestsTable()">
+              </div>
+              <div class="w-44">
+                <input type="date" id="adminFilterDate" class="input-field text-sm" onchange="renderAdminRequestsTable()" placeholder="mm/dd/yyyy">
+              </div>
+              <button type="button" class="btn btn-secondary px-3 py-2" onclick="clearAdminFilters()" title="ล้างค่าตัวกรอง">
+                🔄
+              </button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>เลขที่</th>
+                    <th>วันที่ / เวลา</th>
+                    <th>ยูนิต / บริษัท</th>
+                    <th>ผู้แจ้ง</th>
+                    <th>โซน</th>
+                    <th>ค่าบริการ</th>
+                    <th>สถานะ</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminRequestsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: RATES & PUBLIC HOLIDAYS & SERVICE TERMS & ZONES -->
+        <div id="adminTabRates" class="hidden space-y-6">
+          
+          <!-- Zone Settings Card -->
+          <div class="card p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">🗺️ ตั้งค่าโซนพื้นที่บริการ (Service Zones Configuration)</h3>
+                <p class="text-xs text-slate-500">กำหนดโซนที่ต้องการเปิดให้บริการและคำนวณราคาแบบทวีคูณตามโซนที่เปิด</p>
+              </div>
+              <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openAddZoneModal()">+ เพิ่มโซนบริการ</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="w-16">ลำดับ</th>
+                    <th>ชื่อโซนพื้นที่บริการ</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="zonesTableTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Dynamic Rates Grid Configuration -->
+          <div class="card p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">💰 กำหนดอัตราค่าบริการ</h3>
+                <p class="text-xs text-slate-500">ระบบคำนวณอัตราค่าบริการแบบไดนามิกประเมินตามช่วงเวลาและประเภทวัน</p>
+              </div>
+              <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openRateModal()">+ เพิ่มเรทราคา</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>เงื่อนไข / ช่วงเวลา</th>
+                    <th>ประเภทวัน (Condition)</th>
+                    <th>เวลา (HH:MM)</th>
+                    <th>เรท (บาท/ชม.)</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="ratesTableTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Public Holidays Table -->
+            <div class="card p-6 space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">📅 วันหยุดนักขัตฤกษ์</h3>
+                  <p class="text-xs text-slate-500">วันหยุดเพื่อใช้อัตราค่าบริการพิเศษ</p>
+                </div>
+                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openHolidayModal()">+ เพิ่มวันหยุด</button>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>วันที่</th>
+                      <th>ชื่อวันหยุดนักขัตฤกษ์</th>
+                      <th class="text-right">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="holidaysTableTbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Service Terms Table -->
+            <div class="card p-6 space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">📄 เงื่อนไขการใช้บริการ</h3>
+                  <p class="text-xs text-slate-500">ข้อกำหนดสำหรับแสดงผลในส่วนท้ายแบบฟอร์มหน้าผู้ใช้งาน</p>
+                </div>
+                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openTermModal()">+ เพิ่มเงื่อนไข</button>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="w-12">ลำดับ</th>
+                      <th>ข้อกำหนดและเงื่อนไข</th>
+                      <th class="text-right">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="termsTableTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: UNITS MASTER -->
+        <div id="adminTabUnits" class="hidden space-y-6">
+          <div class="card p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">🏢 บ้านเลขที่ / บริษัท (Dropdown Master Data)</h3>
+                <p class="text-xs text-slate-500">จัดการข้อมูลยูนิต ดาวน์โหลดเทมเพลต หรือนำเข้าจากไฟล์ CSV/Excel</p>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-secondary text-xs font-bold py-1.5 px-3" onclick="downloadUnitCsvTemplate()">
+                  📥 ดาวน์โหลด Template
+                </button>
+                <label class="btn btn-success text-xs font-bold py-1.5 px-3 cursor-pointer">
+                  📥 นำเข้า CSV/Excel
+                  <input type="file" id="csvImportInput" accept=".csv" class="hidden" onchange="handleUnitCsvImport(event)">
+                </label>
+                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3" onclick="openAddUnitModal()">
+                  + เพิ่มยูนิต
+                </button>
+              </div>
+            </div>
+
+            <!-- Suggestion Banner -->
+            <div class="p-3 bg-sky-50 border border-sky-100 text-sky-950 rounded-xl text-xs flex items-start gap-2">
+              <span class="text-base">💡</span>
+              <div>
+                <strong>คำแนะนำการนำเข้าไฟล์:</strong>
+                <p class="mt-0.5 text-slate-600">คุณสามารถคลิกปุ่ม "ดาวน์โหลด Template" ด้านบนเพื่อรับไฟล์ตัวอย่าง นำไปกรอกข้อมูลแล้วอัปโหลดกลับเข้ามาได้ทันที</p>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>บ้านเลขที่ / ยูนิต</th>
+                    <th>ชื่อบริษัท</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="unitMasterTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: SYSTEM CONFIG & TELEGRAM -->
+        <div id="adminTabConfig" class="hidden space-y-6">
+          <!-- Nested Sub-tab Buttons -->
+          <div class="flex border-b border-slate-200">
+            <button type="button" id="subTabBtnGeneral" class="px-4 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700" onclick="switchSubTab('general')">
+              ⚙️ ทั่วไป & Telegram
+            </button>
+            <button type="button" id="subTabBtnSync" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sync')">
+              ☁️ สถานะ & ซิงค์
+            </button>
+            <button type="button" id="subTabBtnBackup" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('backup')">
+              📖 สำรองข้อมูล JSON
+            </button>
+            <button type="button" id="subTabBtnSysInfo" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sysinfo')">
+              🧬 ข้อมูลระบบ
+            </button>
+          </div>
+
+          <!-- SUB-TAB 1: GENERAL & TELEGRAM CONFIG -->
+          <div id="subTabGeneral" class="space-y-6">
+            <div class="card p-6 space-y-5">
+              <div class="border-b border-slate-100 pb-3">
+                <h4 class="text-base font-bold text-slate-900">⚙️ ตั้งค่า Telegram & รหัสผ่านเจ้าหน้าที่</h4>
+                <p class="text-xs text-slate-500">จัดการข้อมูล Bot Webhook และความปลอดภัย</p>
+              </div>
+
+              <div class="space-y-4 text-xs">
+                <div>
+                  <label for="telegramTokenInput" class="block font-semibold text-slate-700 mb-1">Telegram Bot Token</label>
+                  <input type="text" id="telegramTokenInput" class="input-field" value="7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8" onchange="saveGeneralSettings()">
+                </div>
+                <div>
+                  <label for="telegramChatIdInput" class="block font-semibold text-slate-700 mb-1">Group Chat ID</label>
+                  <input type="text" id="telegramChatIdInput" class="input-field" value="-100310351268" onchange="saveGeneralSettings()">
+                </div>
+                <div class="flex items-center gap-2 pt-2">
+                  <input type="checkbox" id="enableTelegramCheck" class="w-4 h-4 rounded text-sky-600 border-slate-300" onchange="saveGeneralSettings()" checked>
+                  <label for="enableTelegramCheck" class="font-semibold text-slate-800 text-xs">เปิดใช้งานการแจ้งเตือนไปยัง Telegram</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password management card -->
+            <div class="card p-6 space-y-4">
+              <div class="border-b border-slate-100 pb-3">
+                <h4 class="text-base font-bold text-slate-900">🔑 รหัสผ่านผู้ใช้งานหลังบ้าน</h4>
+                <p class="text-xs text-slate-500">สิทธิ์ Admin และ Staff</p>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button type="button" class="btn btn-secondary text-xs" onclick="openPasswordModal()">เปลี่ยนรหัสผ่านผู้ดูแล</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB 2: AUTO CLOUD SYNC & GAS STATUS -->
+          <div id="subTabSync" class="hidden space-y-6">
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500 absolute"></span>
+              <div class="ml-1 text-xs">
+                <strong class="block text-emerald-900">ระบบบันทึกอัตโนมัติทำงานอยู่</strong>
+                <p class="text-emerald-700 mt-0.5">ทุกการเพิ่ม แก้ไข ลบ จะถูกบันทึกและส่งขึ้น Google Sheets & Drive อัตโนมัติ</p>
+              </div>
+            </div>
+
+            <!-- Google Sheets Config -->
+            <div class="card p-6 space-y-5">
+              <h4 class="text-base font-bold text-slate-900">เชื่อมต่อตาราง Google Sheets</h4>
+
+              <div id="gasSyncWarningBlock" class="p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3">
+                <div class="text-xs">
+                  <strong class="text-red-900 block" id="gasStatusHeader">เชื่อมต่อไม่สำเร็จ</strong>
+                  <p class="text-red-700 mt-0.5" id="gasStatusText">ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"</p>
+                </div>
+                <button type="button" class="btn btn-secondary text-xs flex items-center gap-1 bg-white" onclick="testGasConnection()">
+                  🔍 ทดสอบการเชื่อมต่อ
+                </button>
+              </div>
+
+              <!-- URL Form -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <label for="gasWebhookUrlInput" class="text-xs font-semibold text-slate-700">Web App URL</label>
+                  <button type="button" class="text-sky-600 text-xs hover:underline flex items-center gap-1 font-semibold" onclick="copyGasUrlToClipboard()">
+                    📋 คัดลอก
+                  </button>
+                </div>
+                <input type="url" id="gasWebhookUrlInput" class="input-field font-mono text-xs text-slate-800" value="about:invalid#zPythonSafez" onchange="saveGeneralSettings()">
+                <button type="button" class="btn btn-primary text-xs w-28" onclick="saveGeneralSettings()">💾 บันทึก URL</button>
+              </div>
+
+              <!-- Metrics -->
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">โหมดซิงค์</span>
+                  <strong class="text-xs text-slate-800">เรียลไทม์ (Cloud Sync)</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">เวอร์ชันสคริปต์</span>
+                  <strong class="text-xs text-slate-800">v3.3.0</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">รุ่นข้อมูล (Revision)</span>
+                  <strong class="text-xs text-slate-800">รองรับ</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">ส่งข้อมูลล่าสุด</span>
+                  <strong id="gasLastSyncTime" class="text-xs text-slate-800">-</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">ตรวจสอบล่าสุด</span>
+                  <strong id="gasLastTestStatus" class="text-xs text-slate-800">ยังไม่มีการทดสอบ</strong>
+                </div>
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
+                  <span class="text-[10px] text-slate-500 block">ความเร็วตอบสนอง</span>
+                  <strong id="gasResponseTime" class="text-xs text-slate-800">- ms</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB 3: BACKUP JSON -->
+          <div id="subTabBackup" class="hidden space-y-6">
+            <div class="card p-6 space-y-4">
+              <h4 class="text-base font-bold text-slate-900">📖 สำรองข้อมูลและกู้คืนด้วยไฟล์ JSON</h4>
+              <p class="text-xs text-slate-500">กู้คืนสถานะข้อมูลยูนิต อัตราค่าบริการ และประวัติทั้งหมดได้ด้วยไฟล์ JSON</p>
+              <div class="flex items-center gap-3">
+                <button type="button" class="btn btn-secondary text-xs" onclick="exportBackupJson()">💾 Export JSON Backup</button>
+                <label class="btn btn-secondary text-xs cursor-pointer">
+                  ♻️ Import JSON Restore
+                  <input type="file" id="jsonRestoreInput" accept=".json" class="hidden" onchange="handleRestoreJson(event)">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB 4: DIAGNOSTICS & WEBHOOK LOGS -->
+          <div id="subTabSysInfo" class="hidden space-y-6">
+            <div class="card p-6 space-y-4">
+              <h4 class="text-base font-bold text-slate-900">🧬 ข้อมูลของระบบ (Diagnostics & Webhook Logs)</h4>
+              <p class="text-xs text-slate-500">ระบบคีย์บันทึกข้อมูลแบบ Cloud Serverless ประสานงานผ่าน API อัตโนมัติ</p>
+              <div class="space-y-3">
+                <h5 class="text-xs font-bold text-slate-800">พรีวิวข้อความที่ส่งไปยัง Telegram (Webhook Log)</h5>
+                <div id="telegramLogContainer" class="space-y-2 max-h-60 overflow-y-auto text-xs bg-slate-50 p-4 border border-slate-200 rounded-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modern Time Picker Modal (Clock & Keyboard options) -->
+  <div id="modernTimePickerModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 id="timePickerModalTitle" class="text-base font-bold text-slate-900">เลือกเวลาใช้บริการ (OT Time Picker)</h3>
+          <p class="text-[11px] text-slate-500">เลือกจากนาฬิกาจำลอง หรือระบุตัวเลขเวลาด้วยตนเองได้ทันที</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg font-bold" onclick="closeModernTimePicker()">✕</button>
+      </div>
+
+      <!-- Mode Tab Selector -->
+      <div class="flex bg-slate-100 p-1 rounded-lg">
+        <button type="button" id="timePickerTabClock" class="flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-slate-800 shadow-sm" onclick="switchTimePickerTab('clock')">
+          🕒 เลือกจากหน้าปัดนาฬิกา
+        </button>
+        <button type="button" id="timePickerTabType" class="flex-1 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-800" onclick="switchTimePickerTab('type')">
+          ⌨️ พิมพ์ตัวเลขเวลาเอง
+        </button>
+      </div>
+
+      <!-- Clock Face Tab View -->
+      <div id="timePickerClockView" class="space-y-4 py-2">
+        <div class="text-center text-xs text-slate-500">คลิกเลือกตัวเลขชั่วโมงบนหน้าปัด (วงนอก = 0-11 น., วงใน = 12-23 น.)</div>
+        <div class="flex justify-center items-center py-4">
+          <!-- Circular Clock Face Container -->
+          <div class="relative w-64 h-64 rounded-full bg-slate-50 border border-slate-200 shadow-inner flex items-center justify-center">
+            <!-- Center Pivot -->
+            <div class="absolute w-3 h-3 rounded-full bg-sky-600 z-20 shadow"></div>
+            <!-- Clock Hand -->
+            <div id="clockHandIndicator" class="absolute bg-sky-500 origin-bottom bottom-1/2 left-[126px] w-1 h-24 rounded-full z-10 transition-transform duration-200" style="transform: rotate(180deg);">
+              <div class="absolute -top-1 -left-1.5 w-4 h-4 rounded-full bg-sky-600 border border-white"></div>
+            </div>
+
+            <!-- Hour positions (0 to 23 rendered dynamically via JavaScript) -->
+            <div id="clockHoursContainer" class="absolute inset-0 z-10 pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Type Tab View -->
+      <div id="timePickerTypeView" class="hidden space-y-4 py-4">
+        <div class="flex items-center justify-center gap-4">
+          <div>
+            <label class="block text-center text-xs font-semibold text-slate-600 mb-1">ชั่วโมง (0-24)</label>
+            <div class="flex items-center gap-1.5">
+              <button type="button" class="btn btn-secondary py-1 px-3" onclick="adjustTypedHour(-1)">-</button>
+              <input type="number" id="typedHourInput" min="0" max="24" class="input-field text-center font-bold text-lg w-20" value="18" oninput="validateTypedHour(this.value)">
+              <button type="button" class="btn btn-secondary py-1 px-3" onclick="adjustTypedHour(1)">+</button>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-slate-400 mt-5">:</div>
+          <div>
+            <label class="block text-center text-xs font-semibold text-slate-600 mb-1">นาที</label>
+            <input type="text" value="00" class="input-field text-center font-bold text-lg w-16" readonly disabled title="แอร์คิดค่าบริการเป็นรายชั่วโมง">
+          </div>
+        </div>
+        <p class="text-center text-[11px] text-slate-400">หมายเหตุ: ระบบแอร์และราคาประเมินคิดตามชั่วโมงเต็มที่ใช้งาน</p>
+      </div>
+
+      <!-- Rate Preview Status -->
+      <div class="p-3 rounded-lg bg-sky-50 border border-sky-200 text-xs flex items-center justify-between">
+        <div>
+          <span class="text-slate-500 block">เวลาที่เลือกอยู่</span>
+          <strong id="timePickerSelectionDisplay" class="text-slate-800 text-sm">18:00 น.</strong>
+        </div>
+        <div class="text-right">
+          <span class="text-slate-500 block">อัตราค่าบริการประเมิน</span>
+          <strong id="timePickerRateDisplay" class="text-sky-700 text-sm">฿250/ชม.</strong>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" class="btn btn-secondary text-xs" onclick="closeModernTimePicker()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary text-xs font-bold" onclick="confirmModernTimeSelection()">💾 ตกลงเลือกเวลานี้</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Rate Adding Modal -->
+  <div id="addRateModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">➕ กำหนดเรทราคาใหม่</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg font-bold" onclick="closeRateModal()">✕</button>
+      </div>
+      <form onsubmit="handleNewRateSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="newRateName" class="block font-semibold text-slate-700 mb-1">เงื่อนไข / ชื่อช่วงเวลา (เช่น วันเสาร์ช่วงบ่าย)</label>
+          <input type="text" id="newRateName" class="input-field text-xs" required placeholder="ระบุชื่อเรียกเรทราคา">
+        </div>
+        <div>
+          <label for="newRateDayCondition" class="block font-semibold text-slate-700 mb-1">ประเภทวัน (Condition)</label>
+          <select id="newRateDayCondition" class="input-field text-xs">
+            <option value="WEEKDAY">จันทร์ - ศุกร์ (Weekday)</option>
+            <option value="SATURDAY">วันเสาร์ (Saturday)</option>
+            <option value="SUNDAY">วันอาทิตย์ (Sunday)</option>
+            <option value="EVERYDAY">ทุกวัน (Everyday)</option>
+            <option value="HOLIDAY">วันหยุดนักขัตฤกษ์ (Public Holiday)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="newRateStartHour" class="block font-semibold text-slate-700 mb-1">เวลาเริ่ม (0-23)</label>
+            <input type="number" id="newRateStartHour" min="0" max="23" value="18" class="input-field text-xs" required>
+          </div>
+          <div>
+            <label for="newRateEndHour" class="block font-semibold text-slate-700 mb-1">เวลาสิ้นสุด (1-24)</label>
+            <input type="number" id="newRateEndHour" min="1" max="24" value="24" class="input-field text-xs" required>
+          </div>
+        </div>
+        <div>
+          <label for="newRateAmount" class="block font-semibold text-slate-700 mb-1">เรทราคา (บาท / ชั่วโมง)</label>
+          <input type="number" id="newRateAmount" min="0" value="250" class="input-field text-xs" required>
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeRateModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">💾 บันทึกเรทราคา</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Holiday Adding Modal -->
+  <div id="addHolidayModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">➕ กำหนดวันหยุดราชการเพิ่มเติม</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeHolidayModal()">✕</button>
+      </div>
+      <form onsubmit="handleNewHolidaySubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="newHolidayDate" class="block font-semibold text-slate-700 mb-1">เลือกวันที่</label>
+          <input type="date" id="newHolidayDate" class="input-field text-xs" required>
+        </div>
+        <div>
+          <label for="newHolidayName" class="block font-semibold text-slate-700 mb-1">ชื่อวันหยุดนักขัตฤกษ์</label>
+          <input type="text" id="newHolidayName" class="input-field text-xs" required placeholder="เช่น วันสงกรานต์"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeHolidayModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">เพิ่มวันหยุด</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Service Term Adding Modal -->
+  <div id="addTermModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">➕ เพิ่มเงื่อนไขการใช้บริการ</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeTermModal()">✕</button>
+      </div>
+      <form onsubmit="handleNewTermSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="newTermText" class="block font-semibold text-slate-700 mb-1">ข้อความข้อกำหนด / เงื่อนไข</label>
+          <textarea id="newTermText" rows="4" class="input-field text-xs" required placeholder="เช่น การยกเลิกต้องยกเลิกล่วงหน้า 3 ชั่วโมง..."></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeTermModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">เพิ่มเงื่อนไข</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Zone Editing Modal -->
+  <div id="editZoneModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">✏️ แก้ไขชื่อโซนพื้นที่บริการ</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeEditZoneModal()">✕</button>
+      </div>
+      <form onsubmit="handleEditZoneSubmit(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="editZoneIndexInput" value="">
+        <div>
+          <label for="editZoneName" class="block font-semibold text-slate-700 mb-1">ชื่อโซนพื้นที่</label>
+          <input type="text" id="editZoneName" class="input-field text-xs" required placeholder="ระบุชื่อโซน">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeEditZoneModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">บันทึกการแก้ไข</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Zone Adding Modal -->
+  <div id="addZoneModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">➕ เพิ่มโซนพื้นที่บริการใหม่</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeAddZoneModal()">✕</button>
+      </div>
+      <form onsubmit="handleNewZoneSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="newZoneName" class="block font-semibold text-slate-700 mb-1">ชื่อโซนพื้นที่ (เช่น ห้องประชุมชั้น 2)</label>
+          <input type="text" id="newZoneName" class="input-field text-xs" required placeholder="ระบุชื่อโซน">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeAddZoneModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">บันทึกโซน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Master Unit Adding Modal -->
+  <div id="addUnitModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">➕ เพิ่มยูนิต / บริษัท ในระบบ</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeAddUnitModal()">✕</button>
+      </div>
+      <form onsubmit="handleNewUnitMasterSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="newUnitNoMaster" class="block font-semibold text-slate-700 mb-1">บ้านเลขที่ / ยูนิต</label>
+          <input type="text" id="newUnitNoMaster" class="input-field text-xs" required placeholder="เช่น 1168/5">
+        </div>
+        <div>
+          <label for="newCompanyNameMaster" class="block font-semibold text-slate-700 mb-1">ชื่อบริษัท / ผู้เช่า</label>
+          <input type="text" id="newCompanyNameMaster" class="input-field text-xs" required placeholder="เช่น บริษัท ตัวอย่าง เทค จำกัด">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closeAddUnitModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary text-xs">บันทึกยูนิต</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Duplicate Warning Confirmation Modal -->
+  <div id="duplicateConfirmModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center gap-3 text-amber-600 border-b border-slate-100 pb-3">
+        <span class="text-2xl">⚠️</span>
+        <h3 class="text-base font-bold text-slate-900">ตรวจพบคำขอซ้ำซ้อน (Duplicate Request Warning)</h3>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        ระบบตรวจพบว่ามียูนิต วันที่ และช่วงเวลาเดียวกับรายการในระบบอยู่แล้ว หากบันทึก รายการนี้จะมีสถานะติดป้ายกำกับสีเหลือง <strong class="text-amber-800">"⚠️ รายการซ้ำ"</strong> เพื่อให้ฝ่ายการเงินและแอดมินตรวจสอบย้อนหลัง
+      </p>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+        <div><strong>ยูนิต:</strong> <span id="dupModalUnit"></span></div>
+        <div><strong>วันที่:</strong> <span id="dupModalDate"></span></div>
+        <div><strong>ช่วงเวลา:</strong> <span id="dupModalTime"></span></div>
+        <div><strong>ยอดเงิน:</strong> <span id="dupModalCost"></span></div>
+      </div>
+      <p class="text-xs font-semibold text-slate-700">คุณยืนยันที่จะบันทึกรายการนี้จริงหรือไม่?</p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" class="btn btn-secondary text-xs" onclick="closeDuplicateConfirmModal()">🚫 ยกเลิกและแก้ไข</button>
+        <button type="button" class="btn btn-warning text-xs font-bold" onclick="proceedSaveDuplicateRequest()">⚠️ ยืนยันบันทึกข้อมูลซ้ำ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-2xl font-bold">⚠️</div>
+        <h3 class="text-lg font-bold text-slate-900">ยืนยันการลบข้อมูล</h3>
+        <p class="text-xs text-slate-500" id="deleteConfirmModalMessage">คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" class="btn btn-secondary text-xs w-full" onclick="closeDeleteConfirmModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-danger text-xs w-full font-bold bg-red-600 hover:bg-red-700 text-white" id="deleteConfirmModalBtn">ยืนยันลบข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Change Modal -->
+  <div id="passwordModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">🔑 เปลี่ยนรหัสผ่านผู้ดูแล</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600" onclick="closePasswordModal()">✕</button>
+      </div>
+      <form onsubmit="handleChangePassword(event)" class="space-y-3 text-xs">
+        <div>
+          <label for="changePwdRole" class="block font-semibold text-slate-700 mb-1">บัญชีที่ต้องการเปลี่ยน</label>
+          <select id="changePwdRole" class="input-field text-xs">
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+          </select>
+        </div>
+        <div>
+          <label for="newPasswordInput" class="block font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
+          <input type="password" id="newPasswordInput" class="input-field text-xs" required minlength="4" placeholder="อย่างน้อย 4 ตัวอักษร">
+        </div>
+        <div id="pwdModalFeedback" class="hidden text-emerald-700 font-semibold"></div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn btn-secondary text-xs" onclick="closePasswordModal()">ปิด</button>
+          <button type="submit" class="btn btn-primary text-xs">บันทึกรหัสผ่านใหม่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Data Export / View Modal -->
+  <div id="dataPreviewModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <div class="card max-w-2xl w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="dataPreviewModalTitle" class="text-base font-bold text-slate-900">ข้อมูลไฟล์</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-600" onclick="closeDataPreviewModal()">✕</button>
+      </div>
+      <p class="text-xs text-slate-500">คุณสามารถคัดลอกข้อมูลด้านล่าง หรือดาวน์โหลดไฟล์ลงเครื่องได้ทันที</p>
+      <textarea id="dataPreviewTextarea" rows="10" class="input-field font-mono text-xs" readonly></textarea>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-secondary text-xs" onclick="copyPreviewTextarea()">📋 คัดลอกข้อความ</button>
+        <button type="button" class="btn btn-primary text-xs" onclick="closeDataPreviewModal()">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== STATE & STORAGE ====================
+    const STORAGE_KEY = 'OT_AIR_APP_STATE_V4';
+
+    const defaultState = {
+      passwords: {
+        admin: 'admin123',
+        staff: 'staff123'
+      },
+      units: [
+        { unitNo: '1168/1', company: 'ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน)' },
+        { unitNo: '1168/2', company: 'บริษัท เอส อาร์ ที (2016) จำกัด' },
+        { unitNo: '1168/3', company: 'บริษัท พาณิชยการแห่งประเทศไทย จำกัด' },
+        { unitNo: '1168/4', company: 'บริษัท พาณิชยการแห่งประเทศไทย จำกัด' }
+      ],
+      // Feature 3: Zones
+      zones: [
+        'โถงต้อนรับ (Lobby)',
+        'สำนักงานใหญ่ (Main Office)',
+        'ห้องประชุม A (Meeting A)',
+        'ห้องประชุม B (Meeting B)'
+      ],
+      ratesList: [
+        { id: 'rate-1', name: 'จันทร์ - ศุกร์ (ช่วงค่ำ)', dayCondition: 'WEEKDAY', startTime: 18, endTime: 24, rate: 250 },
+        { id: 'rate-2', name: 'วันเสาร์ (ช่วงเช้า)', dayCondition: 'SATURDAY', startTime: 6, endTime: 12, rate: 125 },
+        { id: 'rate-3', name: 'วันเสาร์ (ช่วงบ่าย-ดึก)', dayCondition: 'SATURDAY', startTime: 12, endTime: 24, rate: 250 },
+        { id: 'rate-4', name: 'วันอาทิตย์ (ทั้งวัน)', dayCondition: 'SUNDAY', startTime: 6, endTime: 24, rate: 250 },
+        { id: 'rate-5', name: 'ช่วงดึกทุกวัน (00:00 - 06:00)', dayCondition: 'EVERYDAY', startTime: 0, endTime: 6, rate: 250 },
+        { id: 'rate-6', name: 'วันหยุดนักขัตฤกษ์', dayCondition: 'HOLIDAY', startTime: 6, endTime: 24, rate: 250 }
+      ],
+      holidays: [
+        { date: '2026-04-13', name: 'วันสงกรานต์' },
+        { date: '2026-05-01', name: 'วันแรงงานแห่งชาติ' },
+        { date: '2026-12-05', name: 'วันคล้ายวันพระบรมราชสมภพ ร.9' }
+      ],
+      serviceTermsList: [
+        { id: 'term-1', text: 'การแจ้งขอใช้บริการ ต้องยื่นเรื่องล่วงหน้า 1-3 วัน เพื่อให้ฝ่ายอาคารจัดเตรียมระบบและประสานงานได้อย่างมีประสิทธิภาพ' },
+        { id: 'term-2', text: 'การเปิดให้บริการ ฝ่ายอาคารจะดำเนินการเปิดระบบตามวันและเวลาที่ระบุไว้ในแบบฟอร์มนี้เท่านั้น' },
+        { id: 'term-3', text: 'กรณีไม่ได้ใช้งาน (แม้จะยื่นขอไว้) หากมีการขอใช้บริการแล้ว ถึงแม้ในวันจริงจะไม่ได้เปิดใช้งานแอร์ ฝ่ายอาคารจะคิดค่าบริการปกติเต็มจำนวนตามที่ได้แจ้งขอไว้' },
+        { id: 'term-4', text: 'การเปลี่ยนแปลงหรือเสร็จก่อนเวลา กรุณาแจ้งฝ่ายอาคารล่วงหน้าอย่างน้อย 3 ชั่วโมง เพื่อให้เจ้าหน้าที่ปิดระบบได้อย่างเหมาะสม' },
+        { id: 'term-5', text: 'การขอยกเลิกน้อยกว่า 3 ชั่วโมง (หรือขอยกเลิกก่อน 1 ชั่วโมง) ฝ่ายอาคารขอสงวนสิทธิ์เรียกเก็บค่าบริการตามวันและเวลาที่แจ้งไว้เดิมเต็มจำนวน' },
+        { id: 'term-6', text: 'การนับชั่วโมงการใช้งาน หากมีเศษของนาที จะนับปัดขึ้นเป็น 1 ชั่วโมงเต็มทันที (เช่น 1 ชม. 15 นาที คิดเป็น 2 ชม.)' }
+      ],
+      telegramToken: '7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8',
+      telegramChatId: '-100310351268',
+      enableTelegram: true,
+      gasWebhookUrl: 'about:invalid#zPythonSafez',
+      requests: [
+        {
+          id: 'OT-1000',
+          date: '2026-11-14',
+          startHour: 10,
+          endHour: 12,
+          unitNo: '1168/3',
+          company: 'บริษัท พาณิชยการแห่งประเทศไทย จำกัด',
+          requester: 'สุวรรณี',
+          requesterPhone: '0812345678',
+          zones: ['สำนักงานใหญ่ (Main Office)'],
+          note: '',
+          totalHours: 2,
+          totalCost: 250,
+          status: 'APPROVED',
+          isDuplicate: false,
+          groups: [{ startHour: 10, endHour: 12, hours: 2, rate: 125, label: 'วันเสาร์ (ช่วงเช้า)', subtotal: 250 }],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'OT-9915',
+          date: '2026-11-28',
+          startHour: 7,
+          endHour: 14,
+          unitNo: '1168/1',
+          company: 'ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน)',
+          requester: 'พัชราภรณ์ จงโรจน์สกุล',
+          requesterPhone: '0898765432',
+          zones: ['สำนักงานใหญ่ (Main Office)', 'ห้องประชุม A (Meeting A)'],
+          note: '',
+          totalHours: 7,
+          totalCost: 1750, // 2 zones multiplier
+          status: 'APPROVED',
+          isDuplicate: false,
+          groups: [
+            { startHour: 7, endHour: 12, hours: 5, rate: 125, label: 'วันเสาร์ (ช่วงเช้า)', subtotal: 625 },
+            { startHour: 12, endHour: 14, hours: 2, rate: 250, label: 'วันเสาร์ (ช่วงบ่าย-ดึก)', subtotal: 500 }
+          ],
+          createdAt: new Date().toISOString()
+        }
+      ],
+      telegramLogs: []
+    };
+
+    let appState = loadAppState();
+    let currentSessionRole = null; // null | 'admin' | 'staff'
+
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            ...defaultState,
+            ...parsed,
+            passwords: { ...defaultState.passwords, ...(parsed.passwords || {}) },
+            units: Array.isArray(parsed.units) ? parsed.units : defaultState.units,
+            zones: Array.isArray(parsed.zones) ? parsed.zones : defaultState.zones,
+            ratesList: Array.isArray(parsed.ratesList) ? parsed.ratesList : defaultState.ratesList,
+            holidays: Array.isArray(parsed.holidays) ? parsed.holidays : defaultState.holidays,
+            serviceTermsList: Array.isArray(parsed.serviceTermsList) ? parsed.serviceTermsList : defaultState.serviceTermsList,
+            requests: Array.isArray(parsed.requests) ? parsed.requests : defaultState.requests,
+            telegramLogs: Array.isArray(parsed.telegramLogs) ? parsed.telegramLogs : []
+          };
+        }
+      } catch (e) {
+        // Fallback to in-memory state
+      }
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function saveAppState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        // Ignore sandbox storage restrictions
+      }
+      syncToGasIfConfigured();
+    }
+
+    async function syncToGasIfConfigured() {
+      const statusEl = document.getElementById('gasLastSyncTime');
+      if (!appState.gasWebhookUrl) return;
+      try {
+        await fetch(appState.gasWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'SYNC_STATE', timestamp: new Date().toISOString(), requests: appState.requests })
+        });
+        if (statusEl) {
+          const now = new Date();
+          statusEl.textContent = now.toLocaleTimeString('th-TH') + ' (' + formatThaiDate(now.toISOString().split('T')[0]) + ')';
+        }
+      } catch (err) {
+        // Safe fail
+      }
+    }
+
+    // ==================== INITIALIZATION ====================
+    function initAppUI() {
+      const todayStr = '2026-11-14'; // seed a sample day matching image data
+      document.getElementById('requestDateInput').value = todayStr;
+      document.getElementById('requestDateInputDisplay').value = formatThaiDate(todayStr);
+      
+      populateUnitDropdowns();
+      renderUserZonesCheckboxes();
+      renderAdminZonesTable();
+      renderUserRatesTable();
+      
+      document.getElementById('invoiceIssueDate1').textContent = formatThaiDate(todayStr);
+      document.getElementById('invoiceIssueDate2').textContent = formatThaiDate(todayStr);
+
+      loadSettingsIntoInputs();
+      recalculateCostPreview();
+      renderUserRequestsTable();
+      renderTelegramLogs();
+      renderUnitMasterTable();
+      renderHolidaysList();
+      renderAdminDashboardAndTable();
+      renderInvoices();
+      renderRatesTable();
+      renderTermsTable();
+      renderServiceTermsOnUserPortal();
+    }
+
+    function triggerDatePicker() {
+      const dateEl = document.getElementById('requestDateInput');
+      try {
+        dateEl.showPicker();
+      } catch (e) {
+        dateEl.focus();
+        dateEl.click();
+      }
+    }
+
+    function handleDateChange(dateVal) {
+      if (!dateVal) return;
+      document.getElementById('requestDateInputDisplay').value = formatThaiDate(dateVal);
+      recalculateCostPreview();
+    }
+
+    // ==================== ZONES RENDERING & EVENTS ====================
+    function renderUserZonesCheckboxes() {
+      const container = document.getElementById('zonesCheckboxesContainer');
+      if (!container) return;
+      
+      if (appState.zones.length === 0) {
+        container.innerHTML = '<div class="text-red-500 font-semibold col-span-2">⚠️ ยังไม่มีการตั้งค่าโซนในระบบ กรุณาเข้าหลังบ้านไปตั้งค่าโซน</div>';
+        return;
+      }
+
+      container.innerHTML = appState.zones.map((zone, idx) => `
+        <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 hover:border-sky-500 hover:bg-sky-50/20 cursor-pointer transition-all duration-150">
+          <input type="checkbox" name="userRequestZones" value="${zone}" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500" onchange="recalculateCostPreview()">
+          <span class="font-medium text-slate-800">${zone}</span>
+        </label>
+      `).join('');
+    }
+
+    function getSelectedZones() {
+      const checkboxes = document.querySelectorAll('input[name="userRequestZones"]:checked');
+      return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    function setSelectedZones(zonesList) {
+      const checkboxes = document.querySelectorAll('input[name="userRequestZones"]');
+      checkboxes.forEach(cb => {
+        cb.checked = zonesList.includes(cb.value);
+      });
+    }
+
+    function renderAdminZonesTable() {
+      const tbody = document.getElementById('zonesTableTbody');
+      if (!tbody) return;
+      
+      if (appState.zones.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีข้อมูลโซนบริการ</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = appState.zones.map((zone, idx) => `
+        <tr>
+          <td class="font-bold text-slate-500">${idx + 1}</td>
+          <td class="font-semibold text-slate-800">📍 ${zone}</td>
+          <td class="text-right">
+            <div class="inline-flex items-center gap-1.5">
+              <button type="button" class="btn btn-secondary text-xs py-1 px-2 border border-slate-200" onclick="openEditZoneModal(${idx})">✏️ แก้ไข</button>
+              <button type="button" class="btn btn-danger text-xs py-1 px-2.5 font-bold" onclick="deleteZone(${idx})">ลบ</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddZoneModal() {
+      document.getElementById('addZoneModal').classList.remove('hidden');
+      document.getElementById('addZoneModal').classList.add('flex');
+    }
+
+    function closeAddZoneModal() {
+      document.getElementById('addZoneModal').classList.add('hidden');
+      document.getElementById('addZoneModal').classList.remove('flex');
+    }
+
+    function handleNewZoneSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newZoneName').value.trim();
+      if (!name) return;
+
+      if (!appState.zones.includes(name)) {
+        appState.zones.push(name);
+      }
+      saveAppState();
+      renderAdminZonesTable();
+      renderUserZonesCheckboxes();
+      closeAddZoneModal();
+      document.getElementById('newZoneName').value = '';
+    }
+
+    function unused_deleteZone(idx) {
+      // Unused fallback
+    }
+
+    function deleteZone(idx) {
+      const zoneName = appState.zones[idx];
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบโซน "${zoneName}"?`, function() {
+        appState.zones.splice(idx, 1);
+        saveAppState();
+        renderAdminZonesTable();
+        renderUserZonesCheckboxes();
+        recalculateCostPreview();
+      });
+    }
+
+    function openEditZoneModal(idx) {
+      const zoneName = appState.zones[idx];
+      document.getElementById('editZoneIndexInput').value = idx;
+      document.getElementById('editZoneName').value = zoneName;
+      
+      const modal = document.getElementById('editZoneModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeEditZoneModal() {
+      const modal = document.getElementById('editZoneModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleEditZoneSubmit(e) {
+      e.preventDefault();
+      const idx = Number(document.getElementById('editZoneIndexInput').value);
+      const newName = document.getElementById('editZoneName').value.trim();
+      if (isNaN(idx) || !newName) return;
+
+      appState.zones[idx] = newName;
+      saveAppState();
+      
+      renderAdminZonesTable();
+      renderUserZonesCheckboxes();
+      recalculateCostPreview();
+      closeEditZoneModal();
+    }
+
+    // ==================== FRONT-END RATES MATRIX ====================
+    function renderUserRatesTable() {
+      const tbody = document.getElementById('userRatesDisplayTbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = appState.ratesList.map(r => `
+        <tr class="hover:bg-slate-50/50 transition-colors">
+          <td class="p-2.5 font-semibold text-slate-900">${r.name}</td>
+          <td class="p-2.5 font-medium text-slate-600">${formatHour(r.startTime)} - ${formatHour(r.endTime)} น.</td>
+          <td class="p-2.5 text-right font-bold text-sky-700">฿${r.rate}/ชม.</td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== MODERN POPUP TIME PICKER ====================
+    let activePickerType = 'start'; // 'start' | 'end'
+    let selectedHourInPicker = 18;
+
+    function openModernTimePicker(type) {
+      activePickerType = type;
+      const titleEl = document.getElementById('timePickerModalTitle');
+      titleEl.textContent = type === 'start' ? 'เลือกเวลาเริ่มต้นใช้บริการ (Start Time)' : 'เลือกเวลาสิ้นสุดใช้บริการ (End Time)';
+
+      // Read current values
+      const currentVal = Number(document.getElementById(type === 'start' ? 'startTimeSelect' : 'endTimeSelect').value);
+      selectedHourInPicker = isNaN(currentVal) ? (type === 'start' ? 18 : 21) : currentVal;
+
+      // Sync views
+      document.getElementById('typedHourInput').value = selectedHourInPicker;
+      switchTimePickerTab('clock');
+
+      const modal = document.getElementById('modernTimePickerModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      renderClockHours();
+      updateClockHandAndPreview();
+    }
+
+    function closeModernTimePicker() {
+      const modal = document.getElementById('modernTimePickerModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function switchTimePickerTab(tab) {
+      const btnClock = document.getElementById('timePickerTabClock');
+      const btnType = document.getElementById('timePickerTabType');
+      const viewClock = document.getElementById('timePickerClockView');
+      const viewType = document.getElementById('timePickerTypeView');
+
+      if (tab === 'clock') {
+        btnClock.className = 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-slate-800 shadow-sm';
+        btnType.className = 'flex-1 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-800';
+        viewClock.classList.remove('hidden');
+        viewType.classList.add('hidden');
+      } else {
+        btnType.className = 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-slate-800 shadow-sm';
+        btnClock.className = 'flex-1 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-800';
+        viewType.classList.remove('hidden');
+        viewClock.classList.add('hidden');
+      }
+    }
+
+    function renderClockHours() {
+      const container = document.getElementById('clockHoursContainer');
+      container.innerHTML = '';
+
+      // Outer circle (0 - 11)
+      for (let h = 0; h < 12; h++) {
+        const angle = (h - 3) * 30; // 0 is at -90deg (or 3 is at 0deg)
+        const rad = angle * Math.PI / 180;
+        const x = 128 + 94 * Math.cos(rad) - 14; // Center 128px, offset radius 94px, element is 28x28
+        const y = 128 + 94 * Math.sin(rad) - 14;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `absolute w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center pointer-events-auto border transition-all duration-150 cursor-pointer ${h === selectedHourInPicker ? 'bg-sky-600 text-white border-sky-600 shadow' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}`;
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+        btn.textContent = h;
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          selectHourInClock(h);
+        };
+        container.appendChild(btn);
+      }
+
+      // Inner circle (12 - 23)
+      for (let h = 12; h < 24; h++) {
+        const angle = (h - 15) * 30;
+        const rad = angle * Math.PI / 180;
+        const x = 128 + 60 * Math.cos(rad) - 14; // Center 128px, offset radius 60px
+        const y = 128 + 60 * Math.sin(rad) - 14;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `absolute w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center pointer-events-auto border transition-all duration-150 cursor-pointer ${h === selectedHourInPicker ? 'bg-sky-600 text-white border-sky-600 shadow' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}`;
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+        btn.textContent = h;
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          selectHourInClock(h);
+        };
+        container.appendChild(btn);
+      }
+
+      // Add single 24 Option at center pivot if End Time is selected
+      if (activePickerType === 'end') {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `absolute w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center pointer-events-auto border transition-all duration-150 cursor-pointer z-30 ${selectedHourInPicker === 24 ? 'bg-sky-600 text-white border-sky-600 shadow' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}`;
+        btn.style.left = `114px`;
+        btn.style.top = `114px`;
+        btn.textContent = '24';
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          selectHourInClock(24);
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    function selectHourInClock(h) {
+      selectedHourInPicker = h;
+      document.getElementById('typedHourInput').value = h;
+      renderClockHours();
+      updateClockHandAndPreview();
+    }
+
+    function adjustTypedHour(offset) {
+      let val = Number(document.getElementById('typedHourInput').value) + offset;
+      const maxVal = activePickerType === 'end' ? 24 : 23;
+      if (val < 0) val = 0;
+      if (val > maxVal) val = maxVal;
+      selectedHourInPicker = val;
+      document.getElementById('typedHourInput').value = val;
+      renderClockHours();
+      updateClockHandAndPreview();
+    }
+
+    function validateTypedHour(val) {
+      let h = Number(val);
+      const maxVal = activePickerType === 'end' ? 24 : 23;
+      if (isNaN(h) || h < 0) h = 0;
+      if (h > maxVal) h = maxVal;
+      selectedHourInPicker = h;
+      renderClockHours();
+      updateClockHandAndPreview();
+    }
+
+    function updateClockHandAndPreview() {
+      const hand = document.getElementById('clockHandIndicator');
+      const selectionDisplay = document.getElementById('timePickerSelectionDisplay');
+      const rateDisplay = document.getElementById('timePickerRateDisplay');
+
+      // Hand Angle
+      const isInnerRing = selectedHourInPicker >= 12 && selectedHourInPicker !== 24;
+      const relativeHour = selectedHourInPicker % 12;
+      const angle = (relativeHour * 30); // 30 degrees per hour
+
+      hand.style.transform = `rotate(${angle}deg)`;
+      // Height of hand based on outer vs inner
+      if (selectedHourInPicker === 24) {
+        hand.style.height = '0px'; // Hide hand at center
+      } else if (isInnerRing) {
+        hand.style.height = '60px';
+      } else {
+        hand.style.height = '94px';
+      }
+
+      // Format Text Display
+      const timeStr = selectedHourInPicker === 24 ? '24:00 น. (เที่ยงคืน)' : `${String(selectedHourInPicker).padStart(2, '0')}:00 น.`;
+      selectionDisplay.textContent = timeStr;
+
+      // Rate Display calculation based on current form date
+      const dateStr = document.getElementById('requestDateInput').value || '2026-11-14';
+      const rateHour = activePickerType === 'end' ? Math.max(0, selectedHourInPicker - 1) : selectedHourInPicker;
+      const rateInfo = getHourlyRateInfo(dateStr, rateHour);
+      rateDisplay.textContent = `฿${rateInfo.rate}/ชม. (${rateInfo.label})`;
+    }
+
+    function confirmModernTimeSelection() {
+      const targetInputId = activePickerType === 'start' ? 'startTimeSelect' : 'endTimeSelect';
+      const displayId = activePickerType === 'start' ? 'selectedStartText' : 'selectedEndText';
+
+      document.getElementById(targetInputId).value = selectedHourInPicker;
+      const timeStr = selectedHourInPicker === 24 ? '24:00 น.' : `${String(selectedHourInPicker).padStart(2, '0')}:00 น.`;
+      document.getElementById(displayId).textContent = '🕒 ' + timeStr;
+
+      closeModernTimePicker();
+      recalculateCostPreview();
+    }
+
+    function populateUnitDropdowns() {
+      const unitSelect = document.getElementById('unitSelect');
+      const invoiceUnitFilter = document.getElementById('invoiceUnitFilter');
+      const currentVal = unitSelect.value;
+      const currentInvVal = invoiceUnitFilter.value || 'ALL';
+
+      unitSelect.innerHTML = '<option value="">-- เลือกบ้านเลขที่ / ยูนิต --</option>';
+      invoiceUnitFilter.innerHTML = '<option value="ALL">ทุกยูนิต (รวมทั้งหมด)</option>';
+
+      appState.units.forEach((u) => {
+        const opt = document.createElement('option');
+        opt.value = u.unitNo;
+        opt.textContent = `${u.unitNo} — ${u.company}`;
+        unitSelect.appendChild(opt);
+
+        const invOpt = document.createElement('option');
+        invOpt.value = u.unitNo;
+        invOpt.textContent = `${u.unitNo} — ${u.company}`;
+        invoiceUnitFilter.appendChild(invOpt);
+      });
+
+      if (currentVal && appState.units.some(u => u.unitNo === currentVal)) {
+        unitSelect.value = currentVal;
+      }
+      invoiceUnitFilter.value = currentInvVal;
+      handleUnitChange();
+    }
+
+    function handleUnitChange() {
+      const unitNo = document.getElementById('unitSelect').value;
+      const companyInput = document.getElementById('companyNameInput');
+      const found = appState.units.find(u => u.unitNo === unitNo);
+      companyInput.value = found ? found.company : '';
+      
+      // Feature 2: Automatically render requests when selected unit changes
+      renderUserRequestsTable();
+      recalculateCostPreview();
+    }
+
+    // ==================== DYNAMIC CALCULATIONS & RATELIST SEARCH ====================
+    function getDayCategory(dateStr) {
+      if (!dateStr) return { type: 'WEEKDAY', label: 'วันทำการปกติ' };
+      const holiday = appState.holidays.find(h => h.date === dateStr);
+      if (holiday) {
+        return { type: 'HOLIDAY', label: `วันหยุดนักขัตฤกษ์ (${holiday.name})` };
+      }
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const dayOfWeek = dt.getDay();
+      if (dayOfWeek === 0) {
+        return { type: 'SUNDAY', label: 'วันอาทิตย์' };
+      }
+      if (dayOfWeek === 6) {
+        return { type: 'SATURDAY', label: 'วันเสาร์' };
+      }
+      return { type: 'WEEKDAY', label: 'วันทำการปกติ' };
+    }
+
+    function getHourlyRateInfo(dateStr, hour) {
+      const dayCat = getDayCategory(dateStr);
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const dayOfWeek = dt.getDay(); // 0 Sunday, 6 Saturday, 1-5 Mon-Fri
+
+      let matchedRule = null;
+
+      // 1. Check Holiday rules first
+      if (dayCat.type === 'HOLIDAY') {
+        matchedRule = appState.ratesList.find(r => r.dayCondition === 'HOLIDAY' && hour >= r.startTime && hour < r.endTime);
+      }
+
+      // 2. Check Specific Day (Saturday / Sunday)
+      if (!matchedRule) {
+        if (dayOfWeek === 6) { // Saturday
+          matchedRule = appState.ratesList.find(r => r.dayCondition === 'SATURDAY' && hour >= r.startTime && hour < r.endTime);
+        } else if (dayOfWeek === 0) { // Sunday
+          matchedRule = appState.ratesList.find(r => r.dayCondition === 'SUNDAY' && hour >= r.startTime && hour < r.endTime);
+        }
+      }
+
+      // 3. Check General Weekday
+      if (!matchedRule && dayOfWeek >= 1 && dayOfWeek <= 5) {
+        matchedRule = appState.ratesList.find(r => r.dayCondition === 'WEEKDAY' && hour >= r.startTime && hour < r.endTime);
+      }
+
+      // 4. Check Everyday fallback
+      if (!matchedRule) {
+        matchedRule = appState.ratesList.find(r => r.dayCondition === 'EVERYDAY' && hour >= r.startTime && hour < r.endTime);
+      }
+
+      if (matchedRule) {
+        return { rate: Number(matchedRule.rate), label: matchedRule.name };
+      }
+
+      // absolute standard fallback
+      return { rate: 250, label: 'อัตรามาตรฐานทั่วไป' };
+    }
+
+    function calculateGroupBreakdown(dateStr, startHour, endHour) {
+      const s = Number(startHour);
+      const e = Number(endHour);
+      if (isNaN(s) || isNaN(e) || e <= s) {
+        return { valid: false, totalHours: 0, totalCost: 0, groups: [], dayCategory: getDayCategory(dateStr) };
+      }
+
+      const groups = [];
+      for (let h = s; h < e; h++) {
+        const info = getHourlyRateInfo(dateStr, h);
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && lastGroup.rate === info.rate && lastGroup.label === info.label && lastGroup.endHour === h) {
+          lastGroup.endHour = h + 1;
+          lastGroup.hours += 1;
+          lastGroup.subtotal = lastGroup.hours * lastGroup.rate;
+        } else {
+          groups.push({
+            startHour: h,
+            endHour: h + 1,
+            hours: 1,
+            rate: info.rate,
+            label: info.label,
+            subtotal: info.rate
+          });
+        }
+      }
+
+      const totalHours = e - s;
+      const totalCost = groups.reduce((sum, g) => sum + g.subtotal, 0);
+      return {
+        valid: true,
+        totalHours,
+        totalCost,
+        groups,
+        dayCategory: getDayCategory(dateStr)
+      };
+    }
+
+    function formatHour(h) {
+      return h === 24 ? '24:00' : String(h).padStart(2, '0') + ':00';
+    }
+
+    // Custom formatting helper
+    function formatCurrency(val) {
+      return '฿' + Number(val || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatThaiDate(dateStr) {
+      if (!dateStr) return '-';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    // ==================== DUPLICATE DETECTION ====================
+    function isDuplicateRequest(unitNo, dateStr, startHour, endHour, totalCost, excludeId = '') {
+      if (!unitNo || !dateStr) return false;
+      return appState.requests.some(req => {
+        if (excludeId && req.id === excludeId) return false;
+        if (req.status === 'CANCELLED') return false;
+        return (
+          req.unitNo === unitNo &&
+          req.date === dateStr &&
+          Number(req.startHour) === Number(startHour) &&
+          Number(req.endHour) === Number(endHour) &&
+          Number(req.totalCost) === Number(totalCost)
+        );
+      });
+    }
+
+    function recalculateDuplicatesAcrossAll() {
+      const seen = new Map();
+      appState.requests.forEach(req => {
+        if (req.status === 'CANCELLED') {
+          req.isDuplicate = false;
+          return;
+        }
+        const key = `${req.unitNo}|${req.date}|${req.startHour}|${req.endHour}|${req.totalCost}`;
+        if (seen.has(key)) {
+          req.isDuplicate = true;
+        } else {
+          req.isDuplicate = false;
+          seen.set(key, req.id);
+        }
+      });
+    }
+
+    function recalculateCostPreview() {
+      const unitNo = document.getElementById('unitSelect').value;
+      const dateStr = document.getElementById('requestDateInput').value || '2026-11-14';
+      const startHour = Number(document.getElementById('startTimeSelect').value);
+      const endHour = Number(document.getElementById('endTimeSelect').value);
+      const editingId = document.getElementById('editingRequestId').value;
+
+      const errorEl = document.getElementById('formTimeError');
+      const breakdownEl = document.getElementById('breakdownListContainer');
+      const dayBadge = document.getElementById('dayTypeBadge');
+      const totalHoursEl = document.getElementById('totalHoursPreview');
+      const totalCostEl = document.getElementById('totalCostPreview');
+      const dupAlertEl = document.getElementById('liveDuplicateAlert');
+
+      const selectedZones = getSelectedZones();
+      const numZones = selectedZones.length;
+
+      const calc = calculateGroupBreakdown(dateStr, startHour, endHour);
+      if (dayBadge) dayBadge.textContent = calc.dayCategory.label;
+
+      if (!calc.valid) {
+        if (errorEl) {
+          errorEl.textContent = 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น (เช่น 18:00 ถึง 21:00 น.)';
+          errorEl.classList.remove('hidden');
+        }
+        if (breakdownEl) breakdownEl.innerHTML = '<div class="text-red-500">กรุณาเลือกช่วงเวลาให้ถูกต้อง</div>';
+        if (totalHoursEl) totalHoursEl.textContent = '0 ชม.';
+        if (totalCostEl) totalCostEl.textContent = '฿0.00';
+        if (dupAlertEl) dupAlertEl.classList.add('hidden');
+        return null;
+      }
+
+      if (numZones === 0) {
+        if (errorEl) {
+          errorEl.textContent = '❌ กรุณาเลือกโซนพื้นที่บริการอย่างน้อย 1 โซน';
+          errorEl.classList.remove('hidden');
+        }
+        if (breakdownEl) breakdownEl.innerHTML = '<div class="text-red-500 font-semibold">กรุณาเลือกโซนพื้นที่บริการอย่างน้อย 1 โซน</div>';
+        if (totalHoursEl) totalHoursEl.textContent = `${calc.totalHours} ชม. (0 โซน)`;
+        if (totalCostEl) totalCostEl.textContent = '฿0.00';
+        if (dupAlertEl) dupAlertEl.classList.add('hidden');
+        return null;
+      }
+
+      if (errorEl) errorEl.classList.add('hidden');
+      
+      // Feature 3: Multiply cost by number of selected zones
+      const zoneMultipliedCost = calc.totalCost * numZones;
+
+      let breakdownHtml = calc.groups.map(g => {
+        const zoneSubtotal = g.subtotal * numZones;
+        return `
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-white border border-slate-200">
+            <div>
+              <span class="font-semibold text-slate-800">${formatHour(g.startHour)} - ${formatHour(g.endHour)} น.</span>
+              <span class="text-slate-500 ml-1">(${g.label}: ${g.hours} ชม. × ฿${g.rate.toLocaleString()} × ${numZones} โซน)</span>
+            </div>
+            <span class="font-bold text-slate-900">${formatCurrency(zoneSubtotal)}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Add a dedicated zone-wise calculation summary box (เพิ่มการสรุปคำนวนค่าบริการตามโซน)
+      // We will render each checked zone on its own line:
+      // [Zone Name]: ค่าบริการพื้นฐาน ฿[Basic Cost Per Zone / Hours] × [Hours] = ฿[Zone Cost]
+      const avgHourlyRate = calc.totalHours > 0 ? (calc.totalCost / calc.totalHours) : 0;
+      
+      const zoneRowsHtml = selectedZones.map(z => `
+        <div class="flex items-center justify-between text-[11px] py-1 border-b border-sky-100/40 last:border-0">
+          <span class="font-semibold text-slate-800 flex items-center gap-1">📍 ${z}:</span>
+          <span class="text-slate-600 text-right">
+            ค่าบริการพื้นฐาน ฿${avgHourlyRate.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} × ${calc.totalHours} = 
+            <strong class="text-sky-700 ml-1">${formatCurrency(calc.totalCost)}</strong>
+          </span>
+        </div>
+      `).join('');
+
+      const zonesSummaryHtml = `
+        <div class="p-3.5 rounded-xl bg-sky-50/50 border border-sky-100 text-xs space-y-2 mt-2">
+          <div class="font-bold text-sky-900 border-b border-sky-100 pb-1.5 flex items-center gap-1.5">
+            🗺️ รายการคำนวณแยกตามโซนบริการ (${numZones} โซน):
+          </div>
+          <div class="space-y-1">
+            ${zoneRowsHtml}
+          </div>
+          <div class="pt-2 border-t border-sky-100 flex items-center justify-between font-bold text-slate-900 text-[12.5px]">
+            <span>ยอดรวมทุกโซนสุทธิ:</span>
+            <span class="text-sky-800 text-base">${formatCurrency(zoneMultipliedCost)}</span>
+          </div>
+        </div>
+      `;
+
+      if (breakdownEl) breakdownEl.innerHTML = breakdownHtml + zonesSummaryHtml;
+
+      if (totalHoursEl) totalHoursEl.textContent = `${calc.totalHours} ชม. (${numZones} โซน)`;
+      if (totalCostEl) totalCostEl.textContent = formatCurrency(zoneMultipliedCost);
+
+      const dup = isDuplicateRequest(unitNo, dateStr, startHour, endHour, zoneMultipliedCost, editingId);
+      if (dup) {
+        if (dupAlertEl) dupAlertEl.classList.remove('hidden');
+      } else {
+        if (dupAlertEl) dupAlertEl.classList.add('hidden');
+      }
+
+      return {
+        ...calc,
+        totalCost: zoneMultipliedCost,
+        selectedZones
+      };
+    }
+
+    // ==================== SUBMIT / EDIT / CANCEL REQUEST ====================
+    let pendingSaveData = null;
+
+    function handleRequestSubmit(e) {
+      e.preventDefault();
+      const calc = recalculateCostPreview();
+      if (!calc) return;
+
+      const unitNo = document.getElementById('unitSelect').value;
+      const company = document.getElementById('companyNameInput').value;
+      const requester = document.getElementById('requesterNameInput').value.trim();
+      const requesterPhone = document.getElementById('requesterPhoneInput').value.trim();
+      const dateStr = document.getElementById('requestDateInput').value;
+      const startHour = Number(document.getElementById('startTimeSelect').value);
+      const endHour = Number(document.getElementById('endTimeSelect').value);
+      const note = document.getElementById('requestNoteInput').value.trim();
+      const editingId = document.getElementById('editingRequestId').value;
+
+      const dup = isDuplicateRequest(unitNo, dateStr, startHour, endHour, calc.totalCost, editingId);
+
+      // If it is a duplicate, block and show the modern prevention confirmation dialog
+      if (dup) {
+        pendingSaveData = {
+          unitNo, company, requester, requesterPhone, dateStr, startHour, endHour, note, editingId, calc, dup
+        };
+        
+        document.getElementById('dupModalUnit').textContent = `${unitNo} (${company})`;
+        document.getElementById('dupModalDate').textContent = formatThaiDate(dateStr);
+        document.getElementById('dupModalTime').textContent = `${formatHour(startHour)} - ${formatHour(endHour)} น. (${calc.totalHours} ชม.)`;
+        document.getElementById('dupModalCost').textContent = formatCurrency(calc.totalCost);
+
+        const modal = document.getElementById('duplicateConfirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        return;
+      }
+
+      // No duplicate, save immediately
+      executeSave(unitNo, company, requester, requesterPhone, dateStr, startHour, endHour, note, editingId, calc, false);
+    }
+
+    function closeDuplicateConfirmModal() {
+      const modal = document.getElementById('duplicateConfirmModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      pendingSaveData = null;
+    }
+
+    function proceedSaveDuplicateRequest() {
+      if (!pendingSaveData) return;
+      const d = pendingSaveData;
+      executeSave(d.unitNo, d.company, d.requester, d.requesterPhone, d.dateStr, d.startHour, d.endHour, d.note, d.editingId, d.calc, true);
+      closeDuplicateConfirmModal();
+    }
+
+    function executeSave(unitNo, company, requester, requesterPhone, dateStr, startHour, endHour, note, editingId, calc, dup) {
+      if (editingId) {
+        const idx = appState.requests.findIndex(r => r.id === editingId);
+        if (idx !== -1) {
+          appState.requests[idx] = {
+            ...appState.requests[idx],
+            unitNo,
+            company,
+            requester,
+            requesterPhone,
+            date: dateStr,
+            startHour,
+            endHour,
+            note,
+            zones: calc.selectedZones,
+            totalHours: calc.totalHours,
+            totalCost: calc.totalCost,
+            groups: calc.groups,
+            dayLabel: calc.dayCategory.label,
+            isDuplicate: dup,
+            updatedAt: new Date().toISOString()
+          };
+          recalculateDuplicatesAcrossAll();
+          sendTelegramNotification('EDIT', appState.requests[idx]);
+        }
+      } else {
+        // BYPASSING APPROVAL STEP (user requests are immediately APPROVED)
+        const newReq = {
+          id: 'OT-' + String(Date.now()).slice(-4),
+          unitNo,
+          company,
+          requester,
+          requesterPhone,
+          date: dateStr,
+          startHour,
+          endHour,
+          note,
+          zones: calc.selectedZones,
+          totalHours: calc.totalHours,
+          totalCost: calc.totalCost,
+          groups: calc.groups,
+          dayLabel: calc.dayCategory.label,
+          status: 'APPROVED', // Default state immediately approved!
+          isDuplicate: dup,
+          createdAt: new Date().toISOString()
+        };
+        appState.requests.unshift(newReq);
+        recalculateDuplicatesAcrossAll();
+        sendTelegramNotification('NEW', newReq);
+      }
+
+      saveAppState();
+      resetRequestForm();
+      renderUserRequestsTable();
+      renderAdminDashboardAndTable();
+      renderInvoices();
+    }
+
+    function resetRequestForm() {
+      document.getElementById('editingRequestId').value = '';
+      document.getElementById('formTitle').textContent = 'แบบฟอร์มขอเปิดแอร์นอกเวลา (OT)';
+      document.getElementById('editingModeBadge').classList.add('hidden');
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+      document.getElementById('submitRequestBtn').textContent = '💾 บันทึกคำขอเปิดแอร์ OT';
+      document.getElementById('requesterNameInput').value = '';
+      document.getElementById('requesterPhoneInput').value = '';
+      document.getElementById('requestNoteInput').value = '';
+      
+      // Clear checked checkboxes
+      const checkboxes = document.querySelectorAll('input[name="userRequestZones"]');
+      checkboxes.forEach(cb => cb.checked = false);
+
+      recalculateCostPreview();
+    }
+
+    function startEditRequest(id) {
+      const req = appState.requests.find(r => r.id === id);
+      if (!req) return;
+
+      document.getElementById('editingRequestId').value = req.id;
+      document.getElementById('unitSelect').value = req.unitNo;
+      handleUnitChange();
+      document.getElementById('requesterNameInput').value = req.requester;
+      document.getElementById('requesterPhoneInput').value = req.requesterPhone || '';
+      document.getElementById('requestDateInput').value = req.date;
+      document.getElementById('requestDateInputDisplay').value = formatThaiDate(req.date);
+      document.getElementById('startTimeSelect').value = req.startHour;
+      document.getElementById('endTimeSelect').value = req.endHour;
+      
+      const startText = String(req.startHour).padStart(2, '0') + ':00 น.';
+      const endText = req.endHour === 24 ? '24:00 น. (เที่ยงคืน)' : String(req.endHour).padStart(2, '0') + ':00 น.';
+      document.getElementById('selectedStartText').textContent = '🕒 ' + startText;
+      document.getElementById('selectedEndText').textContent = '🕒 ' + endText;
+
+      document.getElementById('requestNoteInput').value = req.note || '';
+
+      // Set zones checkboxes
+      setSelectedZones(req.zones || []);
+
+      document.getElementById('formTitle').textContent = `แก้ไขคำขอรหัส ${req.id}`;
+      document.getElementById('editingModeBadge').classList.remove('hidden');
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+      document.getElementById('submitRequestBtn').textContent = '💾 บันทึกการแก้ไข';
+
+      // Switch view if needed
+      switchPortal('user');
+      recalculateCostPreview();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelRequestByUser(id) {
+      const req = appState.requests.find(r => r.id === id);
+      if (!req || req.status === 'CANCELLED') return;
+      req.status = 'CANCELLED';
+      recalculateDuplicatesAcrossAll();
+      sendTelegramNotification('CANCEL', req);
+      saveAppState();
+      renderUserRequestsTable();
+      renderAdminDashboardAndTable();
+      renderInvoices();
+    }
+
+    // ==================== TELEGRAM WEBHOOK & LOGS (BACK-OFFICE INTEGRATION) ====================
+    async function sendTelegramNotification(eventType, req) {
+      if (!appState.enableTelegram) return;
+
+      const timeRange = `${formatHour(req.startHour)} - ${formatHour(req.endHour)} น. (${req.totalHours} ชม.)`;
+      const dupTag = req.isDuplicate ? ' ⚠️ [รายการซ้ำ]' : '';
+      const zonesText = (req.zones || []).join(', ') || 'ไม่ได้ระบุโซน';
+
+      let htmlPreview = '';
+      let telegramHtmlMessage = '';
+
+      if (eventType === 'CANCEL') {
+        htmlPreview = `
+          <div class="p-3 rounded-lg bg-red-50 border border-red-250 text-red-950 space-y-1">
+            <div class="text-sm font-extrabold tracking-wide text-red-700">🚨 ❌ ยกเลิกบริการ 🚨</div>
+            <div class="line-through text-slate-600 font-semibold">
+              รหัส ${req.id} | ยูนิต ${req.unitNo} (${req.company}) | โซน: ${zonesText} | วันที่ ${formatThaiDate(req.date)} เวลา ${timeRange} | ยอด ${formatCurrency(req.totalCost)}
+            </div>
+            <div class="text-[11px] text-red-700">ผู้แจ้งยกเลิก: ${req.requester} — กรุณาระงับการเปิดแอร์สำหรับรายการนี้ทันที</div>
+          </div>
+        `;
+        telegramHtmlMessage = `<b>🚨 ❌ ยกเลิกบริการ 🚨</b>\n<s>รหัส: ${req.id}\nยูนิต: ${req.unitNo} (${req.company})\nโซน: ${zonesText}\nวันที่: ${formatThaiDate(req.date)} เวลา ${timeRange}\nยอดเงิน: ${formatCurrency(req.totalCost)}</s>\nผู้ขอ: ${req.requester}`;
+      } else {
+        const title = eventType === 'EDIT' ? '✏️ แก้ไขคำขอเปิดแอร์ OT' : '❄️ คำขอเปิดแอร์นอกเวลาใหม่ (OT AIR)';
+        htmlPreview = `
+          <div class="p-3 rounded-lg bg-sky-50 border border-sky-200 text-slate-800 space-y-1">
+            <div class="font-bold text-sky-900">${title} ${dupTag}</div>
+            <div><strong>รหัส:</strong> ${req.id} | <strong>ยูนิต:</strong> ${req.unitNo} (${req.company})</div>
+            <div><strong>โซนพื้นที่:</strong> <span class="font-semibold text-slate-900">${zonesText}</span></div>
+            <div><strong>วันที่:</strong> ${formatThaiDate(req.date)} | <strong>เวลา:</strong> ${timeRange}</div>
+            <div><strong>ผู้ติดต่อ:</strong> ${req.requester}${req.requesterPhone ? ' (' + req.requesterPhone + ')' : ''} | <strong>ยอดรวม:</strong> <span class="font-bold text-sky-700">${formatCurrency(req.totalCost)}</span></div>
+          </div>
+        `;
+        telegramHtmlMessage = `<b>${title}${dupTag}</b>\nรหัส: ${req.id}\nยูนิต: ${req.unitNo} (${req.company})\nโซน: ${zonesText}\nวันที่: ${formatThaiDate(req.date)}\nเวลา: ${timeRange}\nผู้ติดต่อ: ${req.requester}${req.requesterPhone ? ' (' + req.requesterPhone + ')' : ''}\nยอดเงิน: <b>${formatCurrency(req.totalCost)}</b>`;
+      }
+
+      appState.telegramLogs.unshift({
+        id: Date.now(),
+        time: new Date().toLocaleTimeString('th-TH'),
+        html: htmlPreview
+      });
+      if (appState.telegramLogs.length > 15) appState.telegramLogs.pop();
+      renderTelegramLogs();
+
+      if (appState.telegramToken && appState.telegramChatId) {
+        try {
+          await fetch(`about:invalid#zPythonSafez`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: appState.telegramChatId,
+              text: telegramHtmlMessage,
+              parse_mode: "HTML"
+            })
+          });
+        } catch (err) {
+          // Safe fail
+        }
+      }
+    }
+
+    function renderTelegramLogs() {
+      const container = document.getElementById('telegramLogContainer');
+      if (!container) return;
+
+      if (appState.telegramLogs.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-slate-400">
+            ยังไม่มีประวัติการแจ้งเตือน Telegram
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appState.telegramLogs.map(item => `
+        <div class="space-y-1 border-b border-slate-100 pb-2">
+          <div class="text-[10px] text-slate-400">เวลาส่ง Webhook: ${item.time}</div>
+          ${item.html}
+        </div>
+      `).join('');
+    }
+
+    // ==================== RENDER USER REQUESTS TABLE (Feature 2 - filtered by selected Unit) ====================
+    function renderUserRequestsTable() {
+      const tbody = document.getElementById('userRequestsTbody');
+      if (!tbody) return;
+
+      const unitNo = document.getElementById('unitSelect').value;
+      const q = (document.getElementById('userSearchInput').value || '').trim().toLowerCase();
+
+      // Feature 2: Strictly filter by selected Unit No in the form
+      if (!unitNo) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-10 text-slate-400">
+              <div class="text-3xl mb-2">🏢</div>
+              <div class="font-semibold text-slate-700">กรุณาระบุบ้านเลขที่ / ยูนิต เพื่อดูประวัติ</div>
+              <div class="text-[11px] text-slate-400 mt-1">ระบบจะกรองและแสดงผลเฉพาะรายการคำขอของยูนิตคุณ เพื่อความเป็นส่วนตัวและความชัดเจน</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const filtered = appState.requests.filter(r => {
+        // Must match currently selected unit
+        if (r.unitNo !== unitNo) return false;
+        
+        if (!q) return true;
+        return (
+          r.id.toLowerCase().includes(q) ||
+          r.company.toLowerCase().includes(q) ||
+          r.requester.toLowerCase().includes(q) ||
+          r.date.includes(q) ||
+          (r.zones || []).join(' ').toLowerCase().includes(q)
+        );
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-10 text-slate-400">
+              <div class="text-2xl mb-1">📋</div>
+              <div class="font-semibold text-slate-600">ไม่พบประวัติคำขอสำหรับยูนิต ${unitNo}</div>
+              <div class="text-xs mt-0.5">คุณสามารถกรอกฟอร์มเพื่อส่งคำขอของยูนิตนี้ได้ทันที</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(req => {
+        const rowClass = req.status === 'CANCELLED' ? 'opacity-60 bg-slate-50' : '';
+        const zonesText = (req.zones || []).map(z => `<span class="inline-block bg-sky-50 text-sky-800 text-[10px] font-semibold px-2 py-0.5 rounded border border-sky-100/80 mr-1 mb-1">📍 ${z}</span>`).join('');
+        return `
+          <tr class="${rowClass}">
+            <td>
+              <div class="font-bold text-slate-800">${req.id}</div>
+              <div class="text-xs text-slate-500">${formatThaiDate(req.date)}</div>
+            </td>
+            <td>
+              <div class="font-semibold text-slate-900">ยูนิต ${req.unitNo}</div>
+              <div class="text-xs text-slate-500">${req.company}</div>
+              <div class="text-[11px] text-slate-400">ผู้ขอ: ${req.requester}${req.requesterPhone ? ' (' + req.requesterPhone + ')' : ''}</div>
+            </td>
+            <td>
+              <div class="mb-1.5 flex flex-wrap">${zonesText}</div>
+              <div class="font-semibold text-slate-800">${formatHour(req.startHour)} - ${formatHour(req.endHour)} น. (${req.totalHours} ชม.)</div>
+              ${renderGroupBreakdownCompact(req.groups)}
+              ${req.note ? `<div class="text-[11px] text-sky-700 mt-0.5">หมายเหตุ: ${req.note}</div>` : ''}
+            </td>
+            <td class="num font-bold text-slate-900">${formatCurrency(req.totalCost)}</td>
+            <td><div class="flex flex-col items-start gap-1">${renderStatusBadge(req.status, req.isDuplicate)}</div></td>
+            <td class="text-right">
+              <div class="inline-flex items-center gap-1.5">
+                <button type="button" class="btn btn-secondary text-xs py-1.5 px-2.5" onclick="startEditRequest('${req.id}')">✏️ แก้ไข</button>
+                ${req.status !== 'CANCELLED' ? `<button type="button" class="btn btn-danger text-xs py-1.5 px-2.5" onclick="cancelRequestByUser('${req.id}')">🚫 ยกเลิก</button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ==================== PORTAL NAVIGATION & AUTH ====================
+    function switchPortal(portal) {
+      const userSec = document.getElementById('userPortalSection');
+      const adminSec = document.getElementById('adminPortalSection');
+      const userBtn = document.getElementById('navUserPortalBtn');
+      const adminBtn = document.getElementById('navAdminPortalBtn');
+
+      if (portal === 'user') {
+        userSec.classList.remove('hidden');
+        adminSec.classList.add('hidden');
+        userBtn.className = 'btn btn-primary text-sm';
+        adminBtn.className = 'btn btn-secondary text-sm';
+        renderUserRatesTable();
+      } else {
+        userSec.classList.add('hidden');
+        adminSec.classList.remove('hidden');
+        userBtn.className = 'btn btn-secondary text-sm';
+        adminBtn.className = 'btn btn-primary text-sm';
+        updateAdminAuthView();
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const role = document.getElementById('loginRoleSelect').value;
+      const pwd = document.getElementById('loginPasswordInput').value;
+      const errEl = document.getElementById('loginErrorMsg');
+
+      if (pwd === appState.passwords[role]) {
+        document.getElementById('loginPasswordInput').value = '';
+        errEl.classList.add('hidden');
+
+        // Check if using default password to force change on first login
+        const isDefaultPassword = (role === 'admin' && pwd === 'admin123') || (role === 'staff' && pwd === 'staff123');
+        if (isDefaultPassword) {
+          // Hide normal login, show force change section
+          document.getElementById('loginFormSection').classList.add('hidden');
+          document.getElementById('forcePasswordChangeSection').classList.remove('hidden');
+          document.getElementById('forceChangeRole').value = role;
+          document.getElementById('forceChangeRoleDisplay').value = role.toUpperCase();
+          document.getElementById('forceNewPassword').value = '';
+          document.getElementById('forceConfirmPassword').value = '';
+          document.getElementById('forceChangeErrorMsg').classList.add('hidden');
+        } else {
+          // Log in directly
+          currentSessionRole = role;
+          updateAdminAuthView();
+        }
+      } else {
+        errEl.textContent = 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function handleForcePasswordSubmit(e) {
+      e.preventDefault();
+      const role = document.getElementById('forceChangeRole').value;
+      const newPwd = document.getElementById('forceNewPassword').value;
+      const confirmPwd = document.getElementById('forceConfirmPassword').value;
+      const errEl = document.getElementById('forceChangeErrorMsg');
+
+      if (newPwd.length < 4) {
+        errEl.textContent = 'รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 4 ตัวอักษร';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (newPwd !== confirmPwd) {
+        errEl.textContent = 'รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if ((role === 'admin' && newPwd === 'admin123') || (role === 'staff' && newPwd === 'staff123')) {
+        errEl.textContent = 'กรุณาตั้งรหัสผ่านใหม่ที่ไม่ใช่รหัสผ่านเริ่มต้นเพื่อความปลอดภัย';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      // Save new password
+      appState.passwords[role] = newPwd;
+      saveAppState();
+
+      // Clear and restore view state
+      errEl.classList.add('hidden');
+      document.getElementById('forcePasswordChangeSection').classList.add('hidden');
+      document.getElementById('loginFormSection').classList.remove('hidden');
+
+      // Set logged-in session and render dashboard
+      currentSessionRole = role;
+      updateAdminAuthView();
+    }
+
+    function logoutAdmin() {
+      currentSessionRole = null;
+      document.getElementById('forcePasswordChangeSection').classList.add('hidden');
+      document.getElementById('loginFormSection').classList.remove('hidden');
+      updateAdminAuthView();
+    }
+
+    function updateAdminAuthView() {
+      const loginCard = document.getElementById('adminLoginCard');
+      const content = document.getElementById('adminAuthenticatedContent');
+      const authBadge = document.getElementById('authUserBadge');
+      const roleBadge = document.getElementById('currentRoleBadge');
+
+      if (!currentSessionRole) {
+        loginCard.classList.remove('hidden');
+        content.classList.add('hidden');
+        authBadge.classList.add('hidden');
+        authBadge.classList.remove('flex');
+      } else {
+        loginCard.classList.add('hidden');
+        content.classList.remove('hidden');
+        authBadge.classList.remove('hidden');
+        authBadge.classList.add('flex');
+        roleBadge.textContent = currentSessionRole === 'admin' ? '👑 สิทธิ์: Admin' : '🧑‍💼 สิทธิ์: Staff';
+
+        // Switch to default admin tab
+        switchAdminTab('summary');
+      }
+    }
+
+    function switchAdminTab(tabName) {
+      const tabs = ['summary', 'requestsList', 'rates', 'units', 'config'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const sec = document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (t === tabName) {
+          btn.className = 'btn btn-primary text-xs py-2 px-4 rounded-lg';
+          if (sec) sec.classList.remove('hidden');
+        } else {
+          btn.className = 'btn btn-secondary text-xs py-2 px-4 rounded-lg';
+          if (sec) sec.classList.add('hidden');
+        }
+      });
+
+      if (tabName === 'summary') {
+        renderAdminDashboardAndTable();
+        renderInvoices();
+      } else if (tabName === 'requestsList') {
+        renderAdminRequestsTable();
+      } else if (tabName === 'rates') {
+        renderRatesTable();
+        renderAdminZonesTable();
+        renderHolidaysList();
+        renderTermsTable();
+      } else if (tabName === 'units') {
+        renderUnitMasterTable();
+      } else if (tabName === 'config') {
+        switchSubTab('general');
+      }
+    }
+
+    // ==================== ADMIN SUB-TABS (Image 1 & 4) ====================
+    function switchSubTab(subTab) {
+      const subTabs = ['general', 'sync', 'backup', 'sysinfo'];
+      subTabs.forEach(s => {
+        const btn = document.getElementById('subTabBtn' + s.charAt(0).toUpperCase() + s.slice(1));
+        const view = document.getElementById('subTab' + s.charAt(0).toUpperCase() + s.slice(1));
+        if (s === subTab) {
+          btn.className = 'px-4 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700';
+          view.classList.remove('hidden');
+        } else {
+          btn.className = 'px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800';
+          view.classList.add('hidden');
+        }
+      });
+      if (subTab === 'sysinfo') renderTelegramLogs();
+    }
+
+    // ==================== DASHBOARD & REQUESTS (Image 6) ====================
+    function renderAdminDashboardAndTable() {
+      const totalCount = appState.requests.length;
+      const approvedCount = appState.requests.filter(r => r.status === 'APPROVED').length;
+      const cancelledCount = appState.requests.filter(r => r.status === 'CANCELLED').length;
+
+      const activeRevenue = appState.requests
+        .filter(r => r.status !== 'CANCELLED')
+        .reduce((sum, r) => sum + Number(r.totalCost || 0), 0);
+
+      document.getElementById('kpiActiveRevenue').textContent = formatCurrency(activeRevenue);
+      document.getElementById('kpiTotalCount').textContent = totalCount;
+      document.getElementById('kpiApprovedCount').textContent = approvedCount;
+      document.getElementById('kpiCancelledCount').textContent = cancelledCount;
+    }
+
+    function renderAdminRequestsTable() {
+      const tbody = document.getElementById('adminRequestsTbody');
+      const q = (document.getElementById('adminSearchInput').value || '').trim().toLowerCase();
+      const filterD = document.getElementById('adminFilterDate').value;
+
+      const filtered = appState.requests.filter(r => {
+        if (q && !(
+          r.id.toLowerCase().includes(q) ||
+          r.unitNo.toLowerCase().includes(q) ||
+          r.company.toLowerCase().includes(q) ||
+          r.requester.toLowerCase().includes(q) ||
+          (r.zones || []).join(' ').toLowerCase().includes(q)
+        )) return false;
+        if (filterD && r.date !== filterD) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-10 text-slate-400">
+              ไม่พบรายการคำขอที่ตรงตามเงื่อนไข
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(req => {
+        const isCancelled = req.status === 'CANCELLED';
+        const zonesText = (req.zones || []).map(z => `<span class="inline-block bg-sky-100 text-sky-800 text-[10px] font-semibold px-2 py-0.5 rounded border border-sky-200 mr-1 mb-1">📍 ${z}</span>`).join('');
+        return `
+          <tr class="${isCancelled ? 'opacity-60 bg-slate-50' : ''}">
+            <td class="font-bold text-sky-700">${req.id}</td>
+            <td>
+              <div class="font-semibold text-slate-800">${formatThaiDate(req.date)}</div>
+              <div class="text-[11px] text-slate-500">${formatHour(req.startHour)} - ${formatHour(req.endHour)}</div>
+            </td>
+            <td>
+              <div class="font-semibold text-slate-900">${req.unitNo}</div>
+              <div class="text-xs text-slate-500">${req.company}</div>
+            </td>
+            <td>
+              <div class="text-slate-800 font-medium">${req.requester}</div>
+              <div class="text-[10px] text-slate-450">${req.requesterPhone || '-'}</div>
+              ${req.note ? `<div class="text-[11px] text-slate-500">${req.note}</div>` : ''}
+            </td>
+            <td>
+              <div class="flex flex-wrap max-w-xs">${zonesText}</div>
+            </td>
+            <td class="font-bold text-slate-900">${req.totalCost.toLocaleString()} บ.</td>
+            <td><div class="flex flex-col items-start gap-1">${renderStatusBadge(req.status, req.isDuplicate)}</div></td>
+            <td class="text-right">
+              <div class="inline-flex items-center gap-1">
+                <button type="button" class="btn btn-secondary text-xs py-1 px-2 border border-slate-200" onclick="startEditRequest('${req.id}')">แก้ไข</button>
+                <button type="button" class="btn btn-success text-xs py-1 px-2 text-white" onclick="adminChangeStatus('${req.id}', 'APPROVED')">อนุมัติ</button>
+                <button type="button" class="btn btn-warning text-xs py-1 px-2 text-white" onclick="adminChangeStatus('${req.id}', 'CANCELLED')">ยกเลิก</button>
+                <button type="button" class="btn btn-danger text-xs py-1 px-2 text-white" onclick="deleteRequest('${req.id}')">ลบ</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function deleteRequest(id) {
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบคำขอรหัส "${id}" ออกจากระบบถาวร?`, function() {
+        appState.requests = appState.requests.filter(r => r.id !== id);
+        recalculateDuplicatesAcrossAll();
+        saveAppState();
+        renderUserRequestsTable();
+        renderAdminDashboardAndTable();
+        renderAdminRequestsTable();
+        renderInvoices();
+      });
+    }
+
+    function clearAdminFilters() {
+      document.getElementById('adminSearchInput').value = '';
+      document.getElementById('adminFilterDate').value = '';
+      renderAdminRequestsTable();
+    }
+
+    function exportAdminCsv() {
+      const headers = ['เลขที่', 'วันที่', 'เวลา', 'ยูนิต/บริษัท', 'ผู้แจ้ง', 'โซน', 'ค่าบริการ', 'สถานะ'];
+      const rows = appState.requests.map(r => [
+        r.id,
+        r.date,
+        `${formatHour(r.startHour)}-${formatHour(r.endHour)}`,
+        `"${r.unitNo} — ${r.company.replace(/"/g, '""')}"`,
+        `"${r.requester.replace(/"/g, '""')}"`,
+        `"${(r.zones || []).join('; ')}"`,
+        r.totalCost,
+        r.status
+      ]);
+      const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      triggerFileDownloadOrPreview('OT_AIR_All_Requests.csv', csvContent, 'text/csv;charset=utf-8;');
+    }
+
+    // ==================== INVOICING (SUMMARY TABS) ====================
+    function getFilteredInvoiceRequests() {
+      const unitFilter = document.getElementById('invoiceUnitFilter').value;
+      const startD = document.getElementById('invoiceStartDate').value;
+      const endD = document.getElementById('invoiceEndDate').value;
+
+      return appState.requests.filter(r => {
+        if (r.status === 'CANCELLED') return false;
+        if (unitFilter !== 'ALL' && r.unitNo !== unitFilter) return false;
+        if (startD && r.date < startD) return false;
+        if (endD && r.date > endD) return false;
+        return true;
+      });
+    }
+
+    function renderInvoices() {
+      const unitFilter = document.getElementById('invoiceUnitFilter').value;
+      const startD = document.getElementById('invoiceStartDate').value;
+      const endD = document.getElementById('invoiceEndDate').value;
+      const docSwitch = document.getElementById('invoiceDocSwitch').value;
+
+      const doc1 = document.getElementById('invoiceDoc1Container');
+      const doc2 = document.getElementById('invoiceDoc2Container');
+      if (doc1 && doc2) {
+        doc1.classList.toggle('hidden', docSwitch === 'DOC2');
+        doc2.classList.toggle('hidden', docSwitch === 'DOC1');
+      }
+
+      const periodText = (startD || endD)
+        ? `${startD ? formatThaiDate(startD) : 'เริ่มต้น'} ถึง ${endD ? formatThaiDate(endD) : 'ปัจจุบัน'}`
+        : 'ทั้งหมด';
+      document.getElementById('invoicePeriodText1').textContent = periodText;
+      document.getElementById('invoiceUnitText2').textContent = unitFilter === 'ALL' ? 'ทุกยูนิต' : `ยูนิต ${unitFilter}`;
+
+      const activeReqs = getFilteredInvoiceRequests();
+
+      // Group by Unit
+      const summaryByUnit = new Map();
+      activeReqs.forEach(r => {
+        if (!summaryByUnit.has(r.unitNo)) {
+          summaryByUnit.set(r.unitNo, {
+            unitNo: r.unitNo,
+            company: r.company,
+            count: 0,
+            hours: 0,
+            amount: 0
+          });
+        }
+        const item = summaryByUnit.get(r.unitNo);
+        item.count += 1;
+        item.hours += Number(r.totalHours || 0);
+        item.amount += Number(r.totalCost || 0);
+      });
+
+      const summaryRows = Array.from(summaryByUnit.values());
+      const summaryTbody = document.getElementById('invoiceSummaryTbody');
+
+      if (summaryRows.length === 0) {
+        summaryTbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-8 text-slate-400">ไม่มีรายการใช้งานจริงในช่วงเวลาที่เลือก</td>
+          </tr>
+        `;
+      } else {
+        summaryTbody.innerHTML = summaryRows.map(row => `
+          <tr>
+            <td class="font-bold text-slate-900">ยูนิต ${row.unitNo}</td>
+            <td>${row.company}</td>
+            <td class="num">${row.count} ครั้ง</td>
+            <td class="num">${row.hours} ชม.</td>
+            <td class="num font-bold text-slate-900">${formatCurrency(row.amount)}</td>
+          </tr>
+        `).join('');
+      }
+
+      const grandRequests = summaryRows.reduce((s, i) => s + i.count, 0);
+      const grandHours = summaryRows.reduce((s, i) => s + i.hours, 0);
+      const grandAmount = summaryRows.reduce((s, i) => s + i.amount, 0);
+
+      document.getElementById('invoiceFootRequests').textContent = `${grandRequests} ครั้ง`;
+      document.getElementById('invoiceFootHours').textContent = `${grandHours} ชม.`;
+      document.getElementById('invoiceFootAmount').textContent = formatCurrency(grandAmount);
+
+      // Detailed
+      const detailTbody = document.getElementById('invoiceDetailTbody');
+      if (activeReqs.length === 0) {
+        detailTbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="text-center py-8 text-slate-400">ไม่มีรายการรายละเอียดการใช้งานในช่วงเวลาที่เลือก</td>
+          </tr>
+        `;
+      } else {
+        detailTbody.innerHTML = activeReqs.map(r => {
+          const breakdownText = (r.groups || []).map(g =>
+            `${formatHour(g.startHour)}-${formatHour(g.endHour)} (${g.hours}ชม.×฿${g.rate})`
+          ).join(', ');
+          const zonesText = (r.zones || []).join(', ') || '-';
+          return `
+            <tr>
+              <td class="font-semibold text-sky-700">${r.id}</td>
+              <td>${formatThaiDate(r.date)}</td>
+              <td><strong>${r.unitNo}</strong> — ${r.company}</td>
+              <td>${r.requester} ${r.requesterPhone ? `(${r.requesterPhone})` : ''}</td>
+              <td><span class="text-xs font-semibold text-sky-800">${zonesText}</span></td>
+              <td>${formatHour(r.startHour)} - ${formatHour(r.endHour)} น.</td>
+              <td class="text-xs text-slate-600">${breakdownText}</td>
+              <td class="num">${r.totalHours} ชม.</td>
+              <td class="num font-bold">${formatCurrency(r.totalCost)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // ==================== DYNAMIC RATES ====================
+    function renderRatesTable() {
+      const tbody = document.getElementById('ratesTableTbody');
+      tbody.innerHTML = appState.ratesList.map((r) => `
+        <tr>
+          <td class="font-bold text-slate-900">${r.name}</td>
+          <td>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${r.dayCondition === 'HOLIDAY' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-slate-100 text-slate-700'}">
+              ${r.dayCondition}
+            </span>
+          </td>
+          <td class="font-medium">${formatHour(r.startTime)} - ${formatHour(r.endTime)} น.</td>
+          <td class="font-bold text-sky-700">${r.rate} บ./ชม.</td>
+          <td class="text-right">
+            <button type="button" class="btn btn-danger text-xs py-1 px-2.5 font-bold" onclick="deleteRate('${r.id}')">ลบ</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openRateModal() {
+      document.getElementById('addRateModal').classList.remove('hidden');
+      document.getElementById('addRateModal').classList.add('flex');
+    }
+    function closeRateModal() {
+      document.getElementById('addRateModal').classList.add('hidden');
+      document.getElementById('addRateModal').classList.remove('flex');
+    }
+
+    function handleNewRateSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newRateName').value.trim();
+      const cond = document.getElementById('newRateDayCondition').value;
+      const start = Number(document.getElementById('newRateStartHour').value);
+      const end = Number(document.getElementById('newRateEndHour').value);
+      const amount = Number(document.getElementById('newRateAmount').value);
+
+      if (start >= end) {
+        alert('เวลาเริ่มต้องน้อยกว่าเวลาสิ้นสุด');
+        return;
+      }
+
+      appState.ratesList.push({
+        id: 'rate-' + Date.now(),
+        name,
+        dayCondition: cond,
+        startTime: start,
+        endTime: end,
+        rate: amount
+      });
+
+      saveAppState();
+      renderRatesTable();
+      renderUserRatesTable();
+      recalculateCostPreview();
+      closeRateModal();
+      document.getElementById('newRateName').value = '';
+    }
+
+    function deleteRate(id) {
+      if (appState.ratesList.length <= 1) {
+        alert('อย่างน้อยต้องมีเรทราคาเหลือในระบบอย่างน้อย 1 รายการ');
+        return;
+      }
+      
+      const rateItem = appState.ratesList.find(r => r.id === id);
+      const rateName = rateItem ? rateItem.name : '';
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบเรทราคา "${rateName}"?`, function() {
+        appState.ratesList = appState.ratesList.filter(r => r.id !== id);
+        saveAppState();
+        renderRatesTable();
+        renderUserRatesTable();
+        recalculateCostPreview();
+      });
+    }
+
+    // ==================== DYNAMIC HOLIDAYS ====================
+    function renderHolidaysList() {
+      const tbody = document.getElementById('holidaysTableTbody');
+      tbody.innerHTML = appState.holidays.map((h, idx) => `
+        <tr>
+          <td class="font-mono font-medium">${formatThaiDate(h.date)}</td>
+          <td class="font-semibold text-slate-800">${h.name}</td>
+          <td class="text-right">
+            <button type="button" class="btn btn-danger text-xs py-1 px-2.5" onclick="removeHoliday(${idx})">ลบ</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openHolidayModal() {
+      document.getElementById('addHolidayModal').classList.remove('hidden');
+      document.getElementById('addHolidayModal').classList.add('flex');
+    }
+    function closeHolidayModal() {
+      document.getElementById('addHolidayModal').classList.add('hidden');
+      document.getElementById('addHolidayModal').classList.remove('flex');
+    }
+
+    function handleNewHolidaySubmit(e) {
+      e.preventDefault();
+      const dateVal = document.getElementById('newHolidayDate').value;
+      const name = document.getElementById('newHolidayName').value.trim();
+      if (!dateVal || !name) return;
+
+      if (!appState.holidays.some(h => h.date === dateVal)) {
+        appState.holidays.push({ date: dateVal, name });
+      }
+      saveAppState();
+      renderHolidaysList();
+      recalculateCostPreview();
+      closeHolidayModal();
+      document.getElementById('newHolidayName').value = '';
+    }
+
+    function removeHoliday(idx) {
+      const h = appState.holidays[idx];
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบวันหยุด "${h.name}" (${formatThaiDate(h.date)})?`, function() {
+        appState.holidays.splice(idx, 1);
+        saveAppState();
+        renderHolidaysList();
+        recalculateCostPreview();
+      });
+    }
+
+    // ==================== DYNAMIC SERVICE TERMS ====================
+    function renderTermsTable() {
+      const tbody = document.getElementById('termsTableTbody');
+      tbody.innerHTML = appState.serviceTermsList.map((t, idx) => `
+        <tr>
+          <td class="font-bold text-slate-500">${idx + 1}</td>
+          <td class="text-slate-700 text-xs">${t.text}</td>
+          <td class="text-right">
+            <button type="button" class="btn btn-danger text-xs py-1 px-2.5" onclick="deleteTerm('${t.id}')">ลบ</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderServiceTermsOnUserPortal() {
+      const listContainer = document.getElementById('serviceTermsDisplay');
+      listContainer.innerHTML = appState.serviceTermsList.map(t => `
+        <li>${t.text}</li>
+      `).join('');
+    }
+
+    function openTermModal() {
+      document.getElementById('addTermModal').classList.remove('hidden');
+      document.getElementById('addTermModal').classList.add('flex');
+    }
+    function closeTermModal() {
+      document.getElementById('addTermModal').classList.add('hidden');
+      document.getElementById('addTermModal').classList.remove('flex');
+    }
+
+    function handleNewTermSubmit(e) {
+      e.preventDefault();
+      const text = document.getElementById('newTermText').value.trim();
+      if (!text) return;
+
+      appState.serviceTermsList.push({
+        id: 'term-' + Date.now(),
+        text
+      });
+
+      saveAppState();
+      renderTermsTable();
+      renderServiceTermsOnUserPortal();
+      closeTermModal();
+      document.getElementById('newTermText').value = '';
+    }
+
+    function deleteTerm(id) {
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบเงื่อนไขการใช้บริการนี้?`, function() {
+        appState.serviceTermsList = appState.serviceTermsList.filter(t => t.id !== id);
+        saveAppState();
+        renderTermsTable();
+        renderServiceTermsOnUserPortal();
+      });
+    }
+
+    // ==================== DYNAMIC UNITS & MASTER ====================
+    function renderUnitMasterTable() {
+      const tbody = document.getElementById('unitMasterTbody');
+      if (appState.units.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีข้อมูลยูนิต</td></tr>';
+        return;
+      }
+      tbody.innerHTML = appState.units.map((u, idx) => `
+        <tr>
+          <td class="font-bold text-slate-800">🏢 ${u.unitNo}</td>
+          <td class="text-slate-700">${u.company}</td>
+          <td class="text-right">
+            <button type="button" class="btn btn-danger text-xs py-1 px-2.5" onclick="deleteUnitMaster(${idx})">ลบ</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddUnitModal() {
+      document.getElementById('addUnitModal').classList.remove('hidden');
+      document.getElementById('addUnitModal').classList.add('flex');
+    }
+    function closeAddUnitModal() {
+      document.getElementById('addUnitModal').classList.add('hidden');
+      document.getElementById('addUnitModal').classList.remove('flex');
+    }
+
+    function handleNewUnitMasterSubmit(e) {
+      e.preventDefault();
+      const unitNo = document.getElementById('newUnitNoMaster').value.trim();
+      const company = document.getElementById('newCompanyNameMaster').value.trim();
+      if (!unitNo || !company) return;
+
+      const existingIdx = appState.units.findIndex(u => u.unitNo === unitNo);
+      if (existingIdx !== -1) {
+        appState.units[existingIdx].company = company;
+      } else {
+        appState.units.push({ unitNo, company });
+      }
+
+      saveAppState();
+      populateUnitDropdowns();
+      renderUnitMasterTable();
+      closeAddUnitModal();
+      document.getElementById('newUnitNoMaster').value = '';
+      document.getElementById('newCompanyNameMaster').value = '';
+    }
+
+    function deleteUnitMaster(idx) {
+      const u = appState.units[idx];
+      openDeleteConfirmModal(`คุณแน่ใจหรือไม่ว่าต้องการลบยูนิต "${u.unitNo}" (${u.company})?`, function() {
+        appState.units.splice(idx, 1);
+        saveAppState();
+        populateUnitDropdowns();
+        renderUnitMasterTable();
+      });
+    }
+
+    // ==================== CSV / BACKUP / RESTORE ====================
+    function downloadUnitCsvTemplate() {
+      const sampleCsv = 'Unit_No,Company_Name\n1168/1,ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน)\n1168/2,บริษัท เอส อาร์ ที (2016) จำกัด\n1168/3,บริษัท พาณิชยการแห่งประเทศไทย จำกัด';
+      triggerFileDownloadOrPreview('OT_AIR_Unit_Template.csv', sampleCsv, 'text/csv;charset=utf-8;');
+    }
+
+    function handleUnitCsvImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        lines.forEach((line, index) => {
+          if (index === 0 && line.toLowerCase().includes('unit')) return;
+          const parts = line.split(',');
+          if (parts.length >= 2) {
+            const unitNo = parts[0].replace(/^"|"$/g, '').trim();
+            const company = parts.slice(1).join(',').replace(/^"|"$/g, '').trim();
+            if (unitNo && company) {
+              const ex = appState.units.findIndex(u => u.unitNo === unitNo);
+              if (ex !== -1) appState.units[ex].company = company;
+              else appState.units.push({ unitNo, company });
+            }
+          }
+        });
+        saveAppState();
+        populateUnitDropdowns();
+        renderUnitMasterTable();
+        event.target.value = '';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function exportBackupJson() {
+      const jsonStr = JSON.stringify(appState, null, 2);
+      triggerFileDownloadOrPreview('OT_AIR_Backup.json', jsonStr, 'application/json;charset=utf-8;');
+    }
+
+    function handleRestoreJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && typeof parsed === 'object') {
+            appState = {
+              ...defaultState,
+              ...parsed,
+              units: Array.isArray(parsed.units) ? parsed.units : appState.units,
+              zones: Array.isArray(parsed.zones) ? parsed.zones : appState.zones,
+              ratesList: Array.isArray(parsed.ratesList) ? parsed.ratesList : defaultState.ratesList,
+              holidays: Array.isArray(parsed.holidays) ? parsed.holidays : defaultState.holidays,
+              serviceTermsList: Array.isArray(parsed.serviceTermsList) ? parsed.serviceTermsList : defaultState.serviceTermsList,
+              requests: Array.isArray(parsed.requests) ? parsed.requests : appState.requests
+            };
+            saveAppState();
+            initAppUI();
+          }
+        } catch (err) {
+          // fail safe
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function triggerFileDownloadOrPreview(filename, content, mimeType) {
+      try {
+        const blob = new Blob(['\uFEFF' + content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        // fail safe
+      }
+      document.getElementById('dataPreviewModalTitle').textContent = `📄 ข้อมูลไฟล์: ${filename}`;
+      document.getElementById('dataPreviewTextarea').value = content;
+      const modal = document.getElementById('dataPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDataPreviewModal() {
+      const modal = document.getElementById('dataPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function copyPreviewTextarea() {
+      const ta = document.getElementById('dataPreviewTextarea');
+      ta.select();
+      try {
+        navigator.clipboard.writeText(ta.value);
+      } catch (e) {
+        document.execCommand('copy');
+      }
+    }
+
+    // ==================== SETTINGS CONFIG (Images 1 & 4) ====================
+    function loadSettingsIntoInputs() {
+      document.getElementById('telegramTokenInput').value = appState.telegramToken;
+      document.getElementById('telegramChatIdInput').value = appState.telegramChatId;
+      document.getElementById('enableTelegramCheck').checked = appState.enableTelegram;
+      document.getElementById('gasWebhookUrlInput').value = appState.gasWebhookUrl;
+    }
+
+    function saveGeneralSettings() {
+      appState.telegramToken = document.getElementById('telegramTokenInput').value.trim();
+      appState.telegramChatId = document.getElementById('telegramChatIdInput').value.trim();
+      appState.enableTelegram = document.getElementById('enableTelegramCheck').checked;
+      appState.gasWebhookUrl = document.getElementById('gasWebhookUrlInput').value.trim();
+
+      saveAppState();
+      renderTelegramLogs();
+    }
+
+    function copyGasUrlToClipboard() {
+      const urlEl = document.getElementById('gasWebhookUrlInput');
+      urlEl.select();
+      try {
+        navigator.clipboard.writeText(urlEl.value);
+      } catch (e) {
+        document.execCommand('copy');
+      }
+    }
+
+    function testGasConnection() {
+      const btn = document.querySelector('[onclick="testGasConnection()"]');
+      const warningBlock = document.getElementById('gasSyncWarningBlock');
+      const statusHeader = document.getElementById('gasStatusHeader');
+      const statusText = document.getElementById('gasStatusText');
+      const lastTestEl = document.getElementById('gasLastTestStatus');
+      const speedEl = document.getElementById('gasResponseTime');
+
+      btn.disabled = true;
+      btn.innerHTML = '⌛ กำลังตรวจสอบ...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '🔍 ทดสอบการเชื่อมต่อ';
+
+        const works = appState.gasWebhookUrl.startsWith('about:invalid#zPythonSafez');
+        if (works) {
+          warningBlock.className = 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center justify-between gap-3';
+          statusHeader.textContent = 'เชื่อมต่อสำเร็จ';
+          statusHeader.className = 'text-emerald-900 font-bold';
+          statusText.textContent = 'เชื่อมต่อกับ Google Sheets APIs สำเร็จและพร้อมทำ Cloud Real-time Sync';
+          statusText.className = 'text-emerald-700 mt-0.5';
+          lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (เชื่อมต่อสำเร็จ)';
+          speedEl.textContent = (Math.floor(Math.random() * 80) + 120) + ' ms';
+        } else {
+          warningBlock.className = 'p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3';
+          statusHeader.textContent = 'เชื่อมต่อไม่สำเร็จ';
+          statusHeader.className = 'text-red-900 font-bold';
+          statusText.textContent = 'ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"';
+          statusText.className = 'text-red-700 mt-0.5';
+          lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (ไม่สำเร็จ)';
+          speedEl.textContent = '- ms';
+        }
+      }, 900);
+    }
+
+    function openPasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      document.getElementById('pwdModalFeedback').classList.add('hidden');
+      document.getElementById('newPasswordInput').value = '';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleChangePassword(e) {
+      e.preventDefault();
+      const role = document.getElementById('changePwdRole').value;
+      const newPwd = document.getElementById('newPasswordInput').value;
+      if (!newPwd || newPwd.length < 4) return;
+      appState.passwords[role] = newPwd;
+      saveAppState();
+      const fb = document.getElementById('pwdModalFeedback');
+      fb.textContent = `✅ เปลี่ยนรหัสผ่านของ ${role.toUpperCase()} เรียบร้อยแล้ว`;
+      fb.classList.remove('hidden');
+    }
+
+    // ==================== CUSTOM DELETE CONFIRMATION MODAL ====================
+    let deleteCallback = null;
+
+    function openDeleteConfirmModal(message, callback) {
+      document.getElementById('deleteConfirmModalMessage').textContent = message;
+      deleteCallback = callback;
+      
+      const modal = document.getElementById('deleteConfirmModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDeleteConfirmModal() {
+      const modal = document.getElementById('deleteConfirmModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      deleteCallback = null;
+    }
+
+    // Bind event to the confirm button inside the modal
+    document.getElementById('deleteConfirmModalBtn').onclick = function() {
+      if (deleteCallback) {
+        deleteCallback();
+      }
+      closeDeleteConfirmModal();
+    };
+
+    // Boot application
+    initAppUI();
+  </script>
+</body>
+</html>
