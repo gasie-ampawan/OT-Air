@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OT AIR — ระบบจัดการการขอเปิดแอร์นอกเวลางาน</title>
+  <title>OT AIR — นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,9 +149,9 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-slate-900">OT AIR</h1>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">Air Conditioning Overtime Request System</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</span>
           </div>
-          <p class="text-xs text-slate-500">ระบบจัดการการขอเปิดแอร์นอกเวลางานสำหรับอาคารและสำนักงาน</p>
+          <p class="text-xs text-slate-500">ระบบจัดการการขอเปิดแอร์นอกเวลางาน (Air Conditioning Overtime Request System)</p>
         </div>
       </div>
 
@@ -523,6 +523,13 @@
 
           <!-- Document 1: Invoice Summary -->
           <div id="invoiceDoc1Container" class="card p-8 space-y-6">
+            <!-- Organization Header from image -->
+            <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
+              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</div>
+              <div>62 ถนนสุขุมวิท ต.ปากน้ำ อ.เมืองสมุทรปราการ จ.สมุทรปราการ 10270</div>
+              <div>โทรศัพท์ 021164266 | มือถือ: 0863375256 | เลขประจำตัวผู้เสียภาษี 0994002090517 (สำนักงานใหญ่)</div>
+            </div>
+
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
               <div>
                 <span class="badge bg-sky-100 text-sky-800 border border-sky-200 mb-2">ใบที่ 1 : Invoice Summary</span>
@@ -561,6 +568,13 @@
 
           <!-- Document 2: Detailed Usage Breakdown -->
           <div id="invoiceDoc2Container" class="card p-8 space-y-6">
+            <!-- Organization Header from image -->
+            <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
+              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด แอสปาย เอราวัณ ทาวเวอร์ บี</div>
+              <div>62 ถนนสุขุมวิท ต.ปากน้ำ อ.เมืองสมุทรปราการ จ.สมุทรปราการ 10270</div>
+              <div>โทรศัพท์ 021164266 | มือถือ: 0863375256 | เลขประจำตัวผู้เสียภาษี 0994002090517 (สำนักงานใหญ่)</div>
+            </div>
+
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
               <div>
                 <span class="badge bg-indigo-100 text-indigo-800 border border-indigo-200 mb-2">ใบที่ 2 : Detailed Usage Breakdown</span>
@@ -868,7 +882,7 @@
                 </button>
               </div>
 
-              <!-- URL Form -->
+              <!-- URL Form with user provided Google Apps Script URL -->
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
                   <label for="gasWebhookUrlInput" class="text-xs font-semibold text-slate-700">Web App URL</label>
@@ -876,7 +890,7 @@
                     📋 คัดลอก
                   </button>
                 </div>
-                <input type="url" id="gasWebhookUrlInput" class="input-field font-mono text-xs text-slate-800" value="about:invalid#zPythonSafez" onchange="saveGeneralSettings()">
+                <input type="url" id="gasWebhookUrlInput" class="input-field font-mono text-xs text-slate-800" value="https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF50IibrxKfb97KJSuMuvgKo7x_0NJlRsBi_4g4GL5S6jPZAuUDLwj/exec" onchange="saveGeneralSettings()">
                 <button type="button" class="btn btn-primary text-xs w-28" onclick="saveGeneralSettings()">💾 บันทึก URL</button>
               </div>
 
@@ -888,7 +902,7 @@
                 </div>
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
                   <span class="text-[10px] text-slate-500 block">เวอร์ชันสคริปต์</span>
-                  <strong class="text-xs text-slate-800">v3.3.0</strong>
+                  <strong class="text-xs text-slate-800">v3.4.0</strong>
                 </div>
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center md:text-left">
                   <span class="text-[10px] text-slate-500 block">รุ่นข้อมูล (Revision)</span>
@@ -1304,48 +1318,8 @@
       telegramToken: '7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8',
       telegramChatId: '-100310351268',
       enableTelegram: true,
-      gasWebhookUrl: 'about:invalid#zPythonSafez',
-      requests: [
-        {
-          id: 'OT-1000',
-          date: '2026-11-14',
-          startHour: 10,
-          endHour: 12,
-          unitNo: '1168/3',
-          company: 'บริษัท พาณิชยการแห่งประเทศไทย จำกัด',
-          requester: 'สุวรรณี',
-          requesterPhone: '0812345678',
-          zones: ['สำนักงานใหญ่ (Main Office)'],
-          note: '',
-          totalHours: 2,
-          totalCost: 250,
-          status: 'APPROVED',
-          isDuplicate: false,
-          groups: [{ startHour: 10, endHour: 12, hours: 2, rate: 125, label: 'วันเสาร์ (ช่วงเช้า)', subtotal: 250 }],
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'OT-9915',
-          date: '2026-11-28',
-          startHour: 7,
-          endHour: 14,
-          unitNo: '1168/1',
-          company: 'ธนาคารกรุงศรีอยุธยา จำกัด (มหาชน)',
-          requester: 'พัชราภรณ์ จงโรจน์สกุล',
-          requesterPhone: '0898765432',
-          zones: ['สำนักงานใหญ่ (Main Office)', 'ห้องประชุม A (Meeting A)'],
-          note: '',
-          totalHours: 7,
-          totalCost: 1750,
-          status: 'APPROVED',
-          isDuplicate: false,
-          groups: [
-            { startHour: 7, endHour: 12, hours: 5, rate: 125, label: 'วันเสาร์ (ช่วงเช้า)', subtotal: 625 },
-            { startHour: 12, endHour: 14, hours: 2, rate: 250, label: 'วันเสาร์ (ช่วงบ่าย-ดึก)', subtotal: 500 }
-          ],
-          createdAt: new Date().toISOString()
-        }
-      ],
+      gasWebhookUrl: 'https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF50IibrxKfb97KJSuMuvgKo7x_0NJlRsBi_4g4GL5S6jPZAuUDLwj/exec',
+      requests: [],
       telegramLogs: []
     };
 
@@ -1385,7 +1359,68 @@
       syncToGasIfConfigured();
     }
 
-    async function syncToGasIfConfigured() {
+    // ==================== ฟังก์ชันดึงข้อมูลล่าสุดจาก Google Sheets (Cloud Sync Load) ====================
+    async function loadRequestsFromGas() {
+      if (!appState.gasWebhookUrl) return;
+      
+      try {
+        const response = await fetch(`${appState.gasWebhookUrl}?action=GET_REQUESTS`, {
+          method: 'GET'
+        });
+        const result = await response.json();
+        
+        if (result && result.status === 'success' && Array.isArray(result.data)) {
+          const loadedRequests = result.data.map(item => {
+            let zonesArray = [];
+            if (typeof item.zones === 'string') {
+              zonesArray = item.zones.split(',').map(z => z.trim()).filter(Boolean);
+            } else if (Array.isArray(item.zones)) {
+              zonesArray = item.zones;
+            }
+
+            return {
+              id: String(item.id || ''),
+              date: item.date || '',
+              startHour: parseHourFromString(item.startTime),
+              endHour: parseHourFromString(item.endTime),
+              unitNo: String(item.unitNo || ''),
+              company: item.company || '',
+              requester: item.requester || '',
+              requesterPhone: item.requesterPhone || '-',
+              zones: zonesArray,
+              note: item.note === '-' ? '' : (item.note || ''),
+              totalHours: Number(item.totalHours || 0),
+              totalCost: Number(item.totalCost || 0),
+              status: item.status || 'APPROVED',
+              isDuplicate: false,
+              groups: [],
+              createdAt: item.timestamp || new Date().toISOString()
+            };
+          });
+
+          if (loadedRequests.length > 0) {
+            appState.requests = loadedRequests;
+            recalculateDuplicatesAcrossAll();
+            
+            // อัปเดตตารางและหน้าจอแดชบอร์ดทั้งหมด
+            renderUserRequestsTable();
+            renderAdminDashboardAndTable();
+            renderAdminRequestsTable();
+            renderInvoices();
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load requests from GAS:", err);
+      }
+    }
+
+    function parseHourFromString(timeStr) {
+      if (!timeStr) return 0;
+      const parts = String(timeStr).split(':');
+      return parseInt(parts[0], 10) || 0;
+    }
+
+    async function syncToGasIfConfigured(actionType = "SYNC_STATE", reqPayload = null) {
       const statusEl = document.getElementById('gasLastSyncTime');
       if (!appState.gasWebhookUrl) return;
       try {
@@ -1393,7 +1428,12 @@
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'SYNC_STATE', timestamp: new Date().toISOString(), requests: appState.requests })
+          body: JSON.stringify({ 
+            action: actionType, 
+            timestamp: new Date().toISOString(), 
+            payload: reqPayload,
+            requests: appState.requests 
+          })
         });
         if (statusEl) {
           const now = new Date();
@@ -1406,7 +1446,7 @@
 
     // ==================== INITIALIZATION ====================
     function initAppUI() {
-      const todayStr = '2026-11-14';
+      const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('requestDateInput').value = todayStr;
       document.getElementById('requestDateInputDisplay').value = formatThaiDate(todayStr);
       
@@ -1429,6 +1469,9 @@
       renderRatesTable();
       renderTermsTable();
       renderServiceTermsOnUserPortal();
+
+      // ดึงข้อมูลล่าสุดจาก Google Sheets ทันทีที่เปิดใช้งานเว็บ
+      loadRequestsFromGas();
     }
 
     function triggerDatePicker() {
@@ -1735,7 +1778,7 @@
       const timeStr = selectedHourInPicker === 24 ? '24:00 น. (เที่ยงคืน)' : `${String(selectedHourInPicker).padStart(2, '0')}:00 น.`;
       selectionDisplay.textContent = timeStr;
 
-      const dateStr = document.getElementById('requestDateInput').value || '2026-11-14';
+      const dateStr = document.getElementById('requestDateInput').value || new Date().toISOString().split('T')[0];
       const rateHour = activePickerType === 'end' ? Math.max(0, selectedHourInPicker - 1) : selectedHourInPicker;
       const rateInfo = getHourlyRateInfo(dateStr, rateHour);
       rateDisplay.textContent = `฿${rateInfo.rate}/ชม. (${rateInfo.label})`;
@@ -1933,7 +1976,7 @@
 
     function recalculateCostPreview() {
       const unitNo = document.getElementById('unitSelect').value;
-      const dateStr = document.getElementById('requestDateInput').value || '2026-11-14';
+      const dateStr = document.getElementById('requestDateInput').value || new Date().toISOString().split('T')[0];
       const startHour = Number(document.getElementById('startTimeSelect').value);
       const endHour = Number(document.getElementById('endTimeSelect').value);
       const editingId = document.getElementById('editingRequestId').value;
@@ -2092,6 +2135,9 @@
     }
 
     function executeSave(unitNo, company, requester, requesterPhone, dateStr, startHour, endHour, note, editingId, calc, dup) {
+      let payloadData = null;
+      let actionType = "NEW_REQUEST";
+
       if (editingId) {
         const idx = appState.requests.findIndex(r => r.id === editingId);
         if (idx !== -1) {
@@ -2114,7 +2160,8 @@
             updatedAt: new Date().toISOString()
           };
           recalculateDuplicatesAcrossAll();
-          sendTelegramNotification('EDIT', appState.requests[idx]);
+          payloadData = appState.requests[idx];
+          actionType = "UPDATE_REQUEST";
         }
       } else {
         const newReq = {
@@ -2138,10 +2185,13 @@
         };
         appState.requests.unshift(newReq);
         recalculateDuplicatesAcrossAll();
-        sendTelegramNotification('NEW', newReq);
+        payloadData = newReq;
+        actionType = "NEW_REQUEST";
       }
 
       saveAppState();
+      syncToGasIfConfigured(actionType, payloadData);
+
       resetRequestForm();
       renderUserRequestsTable();
       renderAdminDashboardAndTable();
@@ -2202,72 +2252,13 @@
       if (!req || req.status === 'CANCELLED') return;
       req.status = 'CANCELLED';
       recalculateDuplicatesAcrossAll();
-      sendTelegramNotification('CANCEL', req);
+      
       saveAppState();
+      syncToGasIfConfigured("CANCEL_REQUEST", req);
+
       renderUserRequestsTable();
       renderAdminDashboardAndTable();
       renderInvoices();
-    }
-
-    // ==================== TELEGRAM WEBHOOK & LOGS ====================
-    async function sendTelegramNotification(eventType, req) {
-      if (!appState.enableTelegram) return;
-
-      const timeRange = `${formatHour(req.startHour)} - ${formatHour(req.endHour)} น. (${req.totalHours} ชม.)`;
-      const dupTag = req.isDuplicate ? ' ⚠️ [รายการซ้ำ]' : '';
-      const zonesText = (req.zones || []).join(', ') || 'ไม่ได้ระบุโซน';
-
-      let htmlPreview = '';
-      let telegramHtmlMessage = '';
-
-      if (eventType === 'CANCEL') {
-        htmlPreview = `
-          <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-red-950 space-y-1">
-            <div class="text-sm font-extrabold tracking-wide text-red-700">🚨 ❌ ยกเลิกบริการ 🚨</div>
-            <div class="line-through text-slate-600 font-semibold">
-              รหัส ${req.id} | ยูนิต ${req.unitNo} (${req.company}) | โซน: ${zonesText} | วันที่ ${formatThaiDate(req.date)} เวลา ${timeRange} | ยอด ${formatCurrency(req.totalCost)}
-            </div>
-            <div class="text-[11px] text-red-700">ผู้แจ้งยกเลิก: ${req.requester} — กรุณาระงับการเปิดแอร์สำหรับรายการนี้ทันที</div>
-          </div>
-        `;
-        telegramHtmlMessage = `<b>🚨 ❌ ยกเลิกบริการ 🚨</b>\n<s>รหัส: ${req.id}\nยูนิต: ${req.unitNo} (${req.company})\nโซน: ${zonesText}\nวันที่: ${formatThaiDate(req.date)} เวลา ${timeRange}\nยอดเงิน: ${formatCurrency(req.totalCost)}</s>\nผู้ขอ: ${req.requester}`;
-      } else {
-        const title = eventType === 'EDIT' ? '✏️ แก้ไขคำขอเปิดแอร์ OT' : '❄️ คำขอเปิดแอร์นอกเวลาใหม่ (OT AIR)';
-        htmlPreview = `
-          <div class="p-3 rounded-lg bg-sky-50 border border-sky-200 text-slate-800 space-y-1">
-            <div class="font-bold text-sky-900">${title} ${dupTag}</div>
-            <div><strong>รหัส:</strong> ${req.id} | <strong>ยูนิต:</strong> ${req.unitNo} (${req.company})</div>
-            <div><strong>โซนพื้นที่:</strong> <span class="font-semibold text-slate-900">${zonesText}</span></div>
-            <div><strong>วันที่:</strong> ${formatThaiDate(req.date)} | <strong>เวลา:</strong> ${timeRange}</div>
-            <div><strong>ผู้ติดต่อ:</strong> ${req.requester}${req.requesterPhone ? ' (' + req.requesterPhone + ')' : ''} | <strong>ยอดรวม:</strong> <span class="font-bold text-sky-700">${formatCurrency(req.totalCost)}</span></div>
-          </div>
-        `;
-        telegramHtmlMessage = `<b>${title}${dupTag}</b>\nรหัส: ${req.id}\nยูนิต: ${req.unitNo} (${req.company})\nโซน: ${zonesText}\nวันที่: ${formatThaiDate(req.date)}\nเวลา: ${timeRange}\nผู้ติดต่อ: ${req.requester}${req.requesterPhone ? ' (' + req.requesterPhone + ')' : ''}\nยอดเงิน: <b>${formatCurrency(req.totalCost)}</b>`;
-      }
-
-      appState.telegramLogs.unshift({
-        id: Date.now(),
-        time: new Date().toLocaleTimeString('th-TH'),
-        html: htmlPreview
-      });
-      if (appState.telegramLogs.length > 15) appState.telegramLogs.pop();
-      renderTelegramLogs();
-
-      if (appState.telegramToken && appState.telegramChatId) {
-        try {
-          await fetch(`about:invalid#zPythonSafez`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: appState.telegramChatId,
-              text: telegramHtmlMessage,
-              parse_mode: "HTML"
-            })
-          });
-        } catch (err) {
-          // Safe fail
-        }
-      }
     }
 
     function renderTelegramLogs() {
@@ -2641,10 +2632,14 @@
       if (!req || req.status === newStatus) return;
       req.status = newStatus;
       recalculateDuplicatesAcrossAll();
-      if (newStatus === 'CANCELLED') {
-        sendTelegramNotification('CANCEL', req);
-      }
+      
       saveAppState();
+      if (newStatus === 'CANCELLED') {
+        syncToGasIfConfigured("CANCEL_REQUEST", req);
+      } else {
+        syncToGasIfConfigured("UPDATE_REQUEST", req);
+      }
+
       renderUserRequestsTable();
       renderAdminDashboardAndTable();
       renderAdminRequestsTable();
@@ -3187,7 +3182,7 @@
         btn.innerHTML = '🔍 ทดสอบการเชื่อมต่อ';
 
         const url = (appState.gasWebhookUrl || '').trim();
-        const works = url.length > 5; // Validates any non-empty URL or deployed GAS script
+        const works = url.length > 5;
 
         if (works) {
           warningBlock.className = 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center justify-between gap-3';
@@ -3209,42 +3204,6 @@
           speedEl.textContent = '- ms';
         }
       }, 700);
-    }
-
-    function unused_testGasConnection() {
-      const btn = document.querySelector('[onclick="testGasConnection()"]');
-      const warningBlock = document.getElementById('gasSyncWarningBlock');
-      const statusHeader = document.getElementById('gasStatusHeader');
-      const statusText = document.getElementById('gasStatusText');
-      const lastTestEl = document.getElementById('gasLastTestStatus');
-      const speedEl = document.getElementById('gasResponseTime');
-
-      btn.disabled = true;
-      btn.innerHTML = '⌛ กำลังตรวจสอบ...';
-
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = '🔍 ทดสอบการเชื่อมต่อ';
-
-        const works = appState.gasWebhookUrl.startsWith('about:invalid#zPythonSafez');
-        if (works) {
-          warningBlock.className = 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl flex items-center justify-between gap-3';
-          statusHeader.textContent = 'เชื่อมต่อสำเร็จ';
-          statusHeader.className = 'text-emerald-900 font-bold';
-          statusText.textContent = 'เชื่อมต่อกับ Google Sheets APIs สำเร็จและพร้อมทำ Cloud Real-time Sync';
-          statusText.className = 'text-emerald-700 mt-0.5';
-          lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (เชื่อมต่อสำเร็จ)';
-          speedEl.textContent = (Math.floor(Math.random() * 80) + 120) + ' ms';
-        } else {
-          warningBlock.className = 'p-3 bg-red-50 border border-red-200 text-red-950 rounded-xl flex items-center justify-between gap-3';
-          statusHeader.textContent = 'เชื่อมต่อไม่สำเร็จ';
-          statusHeader.className = 'text-red-900 font-bold';
-          statusText.textContent = 'ตรวจสอบว่าลิงก์ถูกต้อง และ Deploy เป็น Web app โดยให้สิทธิ์ "ทุกคน (Anyone)"';
-          statusText.className = 'text-red-700 mt-0.5';
-          lastTestEl.textContent = new Date().toLocaleTimeString('th-TH') + ' (ไม่สำเร็จ)';
-          speedEl.textContent = '- ms';
-        }
-      }, 900);
     }
 
     function openPasswordModal() {
