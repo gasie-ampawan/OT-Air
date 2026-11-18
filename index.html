@@ -1,709 +1,636 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OT AIR — นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบบริหารจัดการขอเปิดแอร์นอกเวลา (OT แอร์) - นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --ink: #0f172a;
-      --muted: #64748b;
-      --brand: #0284c7;
-      --brand-hover: #0369a1;
-      --brand-ink: #ffffff;
-      --accent: #06b6d4;
-      --radius: 20px;
-      --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
-      --font: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--ink);
-      background-color: var(--bg);
-      background-image: radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.03) 0px, transparent 50%),
-                        radial-gradient(at 50% 0%, rgba(2, 132, 199, 0.02) 0px, transparent 50%);
-      line-height: 1.5;
-    }
-    .app-container {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 24px 16px 64px;
+      font-family: 'Prompt', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
     }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .input-field {
-      width: 100%;
-      padding: 11px 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      font: inherit;
-      font-size: 0.95rem;
-      color: var(--ink);
       background: #ffffff;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .input-field:focus {
-      outline: none;
-      border-color: var(--brand);
-      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
-    }
-    .input-field[readonly] {
-      background: #f8fafc;
-      color: #475569;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     }
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      font: inherit;
+      gap: 0.375rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.625rem;
       font-weight: 600;
-      font-size: 0.9rem;
-      padding: 11px 20px;
-      border-radius: 12px;
-      border: 1px solid transparent;
+      transition: all 0.15s ease;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .btn:active { transform: translateY(0.5px) scale(0.98); }
-    .btn-primary { 
-      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
-      color: var(--brand-ink); 
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-    .btn-primary:hover { 
-      background: linear-gradient(135deg, var(--brand-hover) 0%, #025a87 100%);
+    .btn-primary {
+      background-color: #0284c7;
+      color: #ffffff;
     }
-    .btn-secondary { background: #ffffff; color: #334155; border-color: #cbd5e1; }
-    .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
-    .btn-danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
-    .btn-danger:hover { background: #fecaca; }
-    .btn-success { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
-    .btn-success:hover { background: #bbf7d0; }
-    .btn-warning { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-    .btn-warning:hover { background: #fde68a; }
-    
+    .btn-primary:hover:not(:disabled) {
+      background-color: #0369a1;
+    }
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #e2e8f0;
+    }
+    .btn-success {
+      background-color: #10b981;
+      color: #ffffff;
+    }
+    .btn-success:hover:not(:disabled) {
+      background-color: #059669;
+    }
+    .btn-warning {
+      background-color: #f59e0b;
+      color: #ffffff;
+    }
+    .btn-warning:hover:not(:disabled) {
+      background-color: #d97706;
+    }
+    .btn-danger {
+      background-color: #ef4444;
+      color: #ffffff;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+    .input-field {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      font-size: 0.875rem;
+      transition: border-color 0.15s;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 5px 14px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      white-space: nowrap;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
-    .badge-approved { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .badge-cancelled { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-    .badge-duplicate { background: #fef08a; color: #854d0e; border: 1px solid #facc15; }
-    
-    .table-wrap { overflow-x: auto; border-radius: var(--radius); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .badge-approved {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .badge-cancelled {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .badge-duplicate {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
     th {
-      background: #f8fafc;
+      background-color: #f8fafc;
       color: #475569;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
       text-align: left;
-      padding: 14px 18px;
-      border-bottom: 2px solid var(--border);
-      white-space: nowrap;
+      border-bottom: 1px solid #e2e8f0;
     }
     td {
-      padding: 14px 18px;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid #f1f5f9;
-      vertical-align: middle;
+      font-size: 0.875rem;
+      vertical-align: top;
     }
-    tbody tr:hover td { background: #f8fafc; }
-    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
     @media print {
-      .no-print { display: none !important; }
-      body { background: #fff; }
-      .card { box-shadow: none; border: 1px solid #ccc; }
-      @page { size: A4 portrait; margin: 15mm; }
-      #invoiceDoc2Container { page-break-before: always; }
-      table tr { page-break-inside: avoid; }
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #ffffff;
+      }
+      .card {
+        border: none;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-  <!-- Top Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 no-print">
-    <div class="max-w-[1240px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
           ❄️
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg font-bold tracking-tight text-slate-900">OT AIR</h1>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</span>
-            <span id="liveSyncStatusPill" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span id="liveSyncStatusText">กำลังเชื่อมต่อ Cloud...</span>
-            </span>
-          </div>
-          <p class="text-xs text-slate-500">ระบบจัดการการขอเปิดแอร์นอกเวลางาน (Air Conditioning Overtime Request System)</p>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ระบบขอเปิดแอร์นอกเวลา (OT แอร์)</h1>
+          <p class="text-[11px] text-slate-500">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</p>
         </div>
       </div>
 
-      <!-- Portal Switcher & Auth State -->
-      <div class="flex items-center gap-2 flex-wrap">
-        <button type="button" class="btn btn-secondary text-xs py-2 px-3" onclick="manualSyncNow()" title="ซิงค์ข้อมูลล่าสุดทันที">
-          🔄 ซิงค์ข้อมูล
-        </button>
-        <button id="navUserPortalBtn" type="button" class="btn btn-primary text-sm" onclick="switchPortal('user')">
-          📱 ฝั่งผู้ใช้งาน (User Portal)
-        </button>
-        <button id="navAdminPortalBtn" type="button" class="btn btn-secondary text-sm" onclick="switchPortal('admin')">
-          🛠️ ฝั่งผู้ดูแลระบบ (Admin / Staff)
-        </button>
-        <div id="authUserBadge" class="hidden items-center gap-2 pl-2 border-l border-slate-200">
-          <span id="currentRoleBadge" class="badge bg-slate-100 text-slate-800 border border-slate-300"></span>
-          <button type="button" class="btn btn-secondary text-xs py-1.5 px-2.5" onclick="openPasswordModal()">🔑 เปลี่ยนรหัสผ่าน</button>
-          <button type="button" class="btn btn-danger text-xs py-1.5 px-2.5" onclick="logoutAdmin()">ออกจากระบบ</button>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Live Sync Status Pill -->
+        <div id="liveSyncStatusPill" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 cursor-pointer" onclick="manualSyncNow()" title="คลิกเพื่อซิงค์ข้อมูลทันที">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="liveSyncStatusText">พร้อมเชื่อมต่อ</span>
         </div>
+
+        <nav class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+          <button type="button" id="navUserPortalBtn" class="btn btn-primary text-sm" onclick="switchPortal('user')">
+            📝 ยื่นคำขอเปิดแอร์
+          </button>
+          <button type="button" id="navAdminPortalBtn" class="btn btn-secondary text-sm" onclick="switchPortal('admin')">
+            ⚙️ จัดการระบบ (Admin)
+          </button>
+        </nav>
       </div>
     </div>
   </header>
 
-  <main class="app-container">
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
 
-    <!-- ==================== A. USER PORTAL ==================== -->
-    <section id="userPortalSection" class="space-y-6">
+    <!-- ==================== PORTAL 1: USER REQUEST PORTAL ==================== -->
+    <section id="userPortalSection" class="space-y-8">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- 1. Smart Request Form -->
-        <div class="lg:col-span-5 space-y-6">
-          <div class="card p-6 space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <!-- LEFT COLUMN: REQUEST FORM -->
+        <div class="lg:col-span-7 card p-6 space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 id="formTitle" class="text-lg font-bold text-slate-900">แบบฟอร์มขอเปิดแอร์นอกเวลา (OT)</h2>
+              <p class="text-xs text-slate-500">กรอกข้อมูลให้ครบถ้วน ระบบจะคำนวณค่าบริการให้อัตโนมัติ</p>
+            </div>
+            <span id="editingModeBadge" class="hidden badge bg-amber-100 text-amber-800 border border-amber-300">✏️ โหมดแก้ไขข้อมูล</span>
+          </div>
+
+          <form id="otRequestForm" onsubmit="handleRequestSubmit(event)" class="space-y-4">
+            <input type="hidden" id="editingRequestId" value="">
+
+            <!-- Unit & Company -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <h2 id="formTitle" class="text-lg font-bold text-slate-900">แบบฟอร์มขอเปิดแอร์นอกเวลา (OT)</h2>
-                <p class="text-xs text-slate-500">เลือกยูนิต โซน และเวลา ระบบจะคำนวณราคาประเมินทันที</p>
+                <label for="unitSelect" class="block text-xs font-semibold text-slate-700 mb-1">บ้านเลขที่ / ยูนิต <span class="text-red-500">*</span></label>
+                <select id="unitSelect" class="input-field" required onchange="handleUnitChange()">
+                  <option value="">-- เลือกบ้านเลขที่ / ยูนิต --</option>
+                </select>
               </div>
-              <span id="editingModeBadge" class="hidden badge bg-sky-100 text-sky-800 border border-sky-200">✏️ โหมดแก้ไขคำขอ</span>
+              <div>
+                <label for="companyNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อบริษัท / ผู้เช่า</label>
+                <input type="text" id="companyNameInput" class="input-field bg-slate-50 text-slate-600" readonly placeholder="แสดงอัตโนมัติตามยูนิตที่เลือก">
+              </div>
             </div>
 
-            <form id="otRequestForm" class="space-y-4" onsubmit="handleRequestSubmit(event)">
-              <input type="hidden" id="editingRequestId" value="">
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label for="unitSelect" class="block text-xs font-semibold text-slate-700 mb-1">บ้านเลขที่ / ยูนิต <span class="text-red-500">*</span></label>
-                  <select id="unitSelect" class="input-field" required onchange="handleUnitChange()">
-                    <option value="">-- เลือกบ้านเลขที่ / ยูนิต --</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="companyNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อบริษัท / ผู้เช่า (Auto-fill)</label>
-                  <input type="text" id="companyNameInput" class="input-field" readonly placeholder="ระบบกรอกให้อัตโนมัติ">
-                </div>
+            <!-- Requester Info -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="requesterNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อผู้ติดต่อ / ผู้ขอใช้บริการ <span class="text-red-500">*</span></label>
+                <input type="text" id="requesterNameInput" class="input-field" required placeholder="ระบุชื่อ-นามสกุล ผู้แจ้ง">
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label for="requesterNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ชื่อผู้ติดต่อ <span class="text-red-500">*</span></label>
-                  <input type="text" id="requesterNameInput" class="input-field" required placeholder="ระบุชื่อผู้ขอใช้บริการ">
-                </div>
-                <div>
-                  <label for="requesterPhoneInput" class="block text-xs font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
-                  <input type="text" id="requesterPhoneInput" class="input-field" required placeholder="ระบุเบอร์โทรศัพท์ (เช่น 0812345678)">
-                </div>
+              <div>
+                <label for="requesterPhoneInput" class="block text-xs font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ <span class="text-red-500">*</span></label>
+                <input type="tel" id="requesterPhoneInput" class="input-field" required placeholder="เช่น 081-234-5678">
               </div>
+            </div>
 
-              <div class="grid grid-cols-1 gap-3">
-                <div>
-                  <label for="requestDateInputDisplay" class="block text-xs font-semibold text-slate-700 mb-1">วันที่ขอใช้บริการ <span class="text-red-500">*</span></label>
-                  <div class="relative">
-                    <input type="text" id="requestDateInputDisplay" class="input-field cursor-pointer font-medium text-slate-900" readonly placeholder="วัน/เดือน/ปี (เช่น 12/04/2026)" onclick="triggerDatePicker()">
-                    <input type="date" id="requestDateInput" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10" onchange="handleDateChange(this.value)">
-                    <span class="absolute right-3 top-2.5 text-slate-400 pointer-events-none">📅</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Zone Selection (Dynamic Checkboxes) -->
-              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-                <span class="block text-xs font-bold text-slate-700 uppercase tracking-wider">เลือกโซนพื้นที่ใช้บริการ <span class="text-red-500">*</span></span>
-                <div id="zonesCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <!-- Will be dynamically populated by JS -->
-                </div>
-                <div class="text-[10px] text-slate-500">กรณีเลือกมากกว่า 1 โซน ระบบจะทวีคูณราคาประเมินตามจำนวนโซนที่เปิดบริการ</div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <!-- Start Time Selector (Modern Picker) -->
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาเริ่มต้น <span class="text-red-500">*</span></label>
-                  <button type="button" class="input-field flex items-center justify-between text-left font-semibold text-slate-800" onclick="openModernTimePicker('start')">
-                    <span id="selectedStartText">🕒 18:00 น.</span>
-                    <span class="text-sky-600 text-xs hover:underline">แก้ไข 🕒</span>
-                  </button>
-                  <input type="hidden" id="startTimeSelect" value="18">
-                </div>
-
-                <!-- End Time Selector (Modern Picker) -->
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาสิ้นสุด <span class="text-red-500">*</span></label>
-                  <button type="button" class="input-field flex items-center justify-between text-left font-semibold text-slate-800" onclick="openModernTimePicker('end')">
-                    <span id="selectedEndText">🕒 21:00 น.</span>
-                    <span class="text-sky-600 text-xs hover:underline">แก้ไข 🕒</span>
-                  </button>
-                  <input type="hidden" id="endTimeSelect" value="21">
+            <!-- Date & Time -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">วันที่ขอใช้บริการ <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <input type="text" id="requestDateInputDisplay" class="input-field cursor-pointer font-semibold text-slate-800 pr-8" readonly onclick="triggerDatePicker()">
+                  <span class="absolute right-2.5 top-2 text-slate-400 pointer-events-none">📅</span>
+                  <input type="date" id="requestDateInput" class="sr-only" required onchange="handleDateChange(this.value)">
                 </div>
               </div>
 
               <div>
-                <label for="requestNoteInput" class="block text-xs font-semibold text-slate-700 mb-1">หมายเหตุ / คำขอพิเศษ</label>
-                <input type="text" id="requestNoteInput" class="input-field" placeholder="เช่น ขออุณหภูมิ 24°C หรือเปิดไฟโถงทางเดิน">
-              </div>
-
-              <!-- Live Duplicate Warning Banner -->
-              <div id="liveDuplicateAlert" class="hidden p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs">
-                <div class="font-bold flex items-center gap-1.5">⚠️ รายการซ้ำ (Duplicate Detection)</div>
-                <p class="mt-0.5">ตรวจพบคำขอที่มี ยูนิต, วันที่, ช่วงเวลา และยอดเงินตรงกับรายการที่เปิดอยู่แล้วในระบบ</p>
-              </div>
-
-              <!-- Time Validation Error -->
-              <div id="formTimeError" class="hidden p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
-
-              <!-- Smart Cost Calculation & Group Breakdown Box -->
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs font-bold text-slate-700 uppercase tracking-wider">สรุปการคำนวณค่าบริการ (Group Breakdown)</div>
-                  <span id="dayTypeBadge" class="badge bg-sky-100 text-sky-800 border border-sky-200 font-semibold">วันทำการปกติ</span>
-                </div>
-
-                <div id="breakdownListContainer" class="space-y-1.5 text-xs text-slate-700">
-                  <div class="text-slate-400 italic">เลือกวันที่ โซน และเวลา เพื่อดูรายละเอียดราคาประเมิน</div>
-                </div>
-
-                <div class="pt-2.5 border-t border-slate-200 flex items-center justify-between">
-                  <div>
-                    <span class="text-xs text-slate-500">ชั่วโมงรวม × โซน:</span>
-                    <strong id="totalHoursPreview" class="text-sm text-slate-800 ml-1">0 ชม. (0 โซน)</strong>
-                  </div>
-                  <div class="text-right">
-                    <span class="text-xs text-slate-500 block">ยอดรวมค่าบริการทั้งหมด</span>
-                    <span id="totalCostPreview" class="text-xl font-bold text-sky-700">฿0.00</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Service Conditions Caption -->
-              <div class="text-xs text-slate-500 bg-slate-50/70 p-3 rounded-lg border border-slate-200/80 space-y-1">
-                <span class="font-semibold text-slate-700 block">📝 เงื่อนไขการใช้บริการ:</span>
-                <ul id="serviceTermsDisplay" class="list-disc pl-4 space-y-1 text-[11px] text-slate-600">
-                  <!-- Will be dynamically populated -->
-                </ul>
-              </div>
-
-              <div class="flex items-center gap-2 pt-1">
-                <button type="submit" id="submitRequestBtn" class="btn btn-primary w-full">
-                  💾 บันทึกคำขอเปิดแอร์ OT
-                </button>
-                <button type="button" id="cancelEditBtn" class="hidden btn btn-secondary" onclick="resetRequestForm()">
-                  ยกเลิกแก้ไข
+                <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาเริ่มต้น <span class="text-red-500">*</span></label>
+                <input type="hidden" id="startTimeSelect" value="18">
+                <button type="button" id="selectedStartText" class="input-field text-left font-bold text-sky-700 hover:border-sky-500 flex items-center justify-between" onclick="openModernTimePicker('start')">
+                  🕒 18:00 น.
                 </button>
               </div>
-            </form>
-          </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาสิ้นสุด <span class="text-red-500">*</span></label>
+                <input type="hidden" id="endTimeSelect" value="21">
+                <button type="button" id="selectedEndText" class="input-field text-left font-bold text-sky-700 hover:border-sky-500 flex items-center justify-between" onclick="openModernTimePicker('end')">
+                  🕒 21:00 น.
+                </button>
+              </div>
+            </div>
+
+            <div id="formTimeError" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 font-semibold"></div>
+
+            <!-- Zones Selection -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">เลือกโซนพื้นที่บริการ (คิดค่าบริการตามจำนวนโซนที่เลือก) <span class="text-red-500">*</span></label>
+              <div id="zonesCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Note -->
+            <div>
+              <label for="requestNoteInput" class="block text-xs font-semibold text-slate-700 mb-1">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+              <input type="text" id="requestNoteInput" class="input-field" placeholder="เช่น เปิดเฉพาะโซนด้านหน้า หรือแจ้งรายละเอียดเพิ่มเติม">
+            </div>
+
+            <!-- Duplicate Live Warning -->
+            <div id="liveDuplicateAlert" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 flex items-start gap-2.5">
+              <span class="text-lg">⚠️</span>
+              <div>
+                <strong class="block font-bold">คำเตือน: ตรวจพบรายการที่คล้ายกันในระบบ</strong>
+                <span>มียูนิต วันที่ และช่วงเวลาเดียวกันบันทึกไว้แล้ว กรุณาตรวจสอบประวัติรายการด้านล่างเพื่อป้องกันการส่งข้อมูลซ้ำซ้อน</span>
+              </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex items-center gap-3 pt-2">
+              <button type="submit" id="submitRequestBtn" class="btn btn-primary flex-1 py-2.5 text-sm shadow-sm">
+                💾 บันทึกคำขอเปิดแอร์ OT
+              </button>
+              <button type="button" id="cancelEditBtn" class="hidden btn btn-secondary py-2.5 text-sm" onclick="resetRequestForm()">
+                ยกเลิกการแก้ไข
+              </button>
+            </div>
+          </form>
         </div>
 
-        <!-- 2. Front-end Pricing Rates Display (Right Column) -->
-        <div class="lg:col-span-7 space-y-6">
-          <div class="card p-6 bg-gradient-to-tr from-slate-50 to-white h-full space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h3 class="text-sm font-bold text-slate-800">💰 ตารางอัตราค่าบริการแอร์นอกเวลา (OT AIR Rate Matrix)</h3>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">อัปเดตเรียลไทม์</span>
+        <!-- RIGHT COLUMN: COST PREVIEW & RATES -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Cost Summary Card -->
+          <div class="card p-6 space-y-4 bg-gradient-to-br from-white to-sky-50/40 border-sky-100">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="text-base font-bold text-slate-900">💰 สรุปประมาณการค่าบริการ</h3>
+              <span id="dayTypeBadge" class="badge bg-sky-100 text-sky-800">วันทำการปกติ</span>
             </div>
-            <p class="text-xs text-slate-500 mb-2">อัตราค่าบริการจะผันแปรตามประเภทของวันและเวลาที่ขอใช้บริการ กรุณาตรวจดูรายละเอียดในเรทแมทริกซ์ด้านล่าง:</p>
-            <div class="overflow-x-auto text-xs">
-              <table class="w-full">
+
+            <div id="breakdownListContainer" class="space-y-2 text-xs">
+              <div class="text-slate-400 text-center py-4">เลือกวันที่ เวลา และโซนเพื่อดูรายละเอียดค่าบริการ</div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-500 block">ระยะเวลารวม</span>
+                <strong id="totalHoursPreview" class="text-sm font-bold text-slate-800">0 ชม.</strong>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-500 block">ยอดชำระสุทธิ (ไม่รวม VAT)</span>
+                <strong id="totalCostPreview" class="text-2xl font-bold text-sky-700">฿0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rate Matrix Card -->
+          <div class="card p-5 space-y-3">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">📊 ตารางอัตราค่าบริการเปิดแอร์นอกเวลา</h3>
+            <div class="overflow-x-auto rounded-lg border border-slate-200">
+              <table class="text-xs">
                 <thead>
-                  <tr class="bg-slate-100/80 text-slate-600">
-                    <th class="p-3 font-bold text-left rounded-l-lg">เงื่อนไข / ช่วงเวลา</th>
-                    <th class="p-3 font-bold text-left">เวลา (HH:MM)</th>
-                    <th class="p-3 font-bold text-right rounded-r-lg">เรท (บาท/ชม.)</th>
+                  <tr>
+                    <th class="p-2.5">ช่วงวัน / เงื่อนไข</th>
+                    <th class="p-2.5">ช่วงเวลา</th>
+                    <th class="p-2.5 text-right">อัตรา/โซน</th>
                   </tr>
                 </thead>
-                <tbody id="userRatesDisplayTbody" class="divide-y divide-slate-100 text-slate-700">
-                  <!-- Dynamic rates list will be rendered here -->
+                <tbody id="userRatesDisplayTbody" class="divide-y divide-slate-100">
+                  <!-- Populated dynamically -->
                 </tbody>
               </table>
             </div>
-            <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 space-y-1">
-              <p>💡 <strong>หมายเหตุเพิ่มเติม:</strong></p>
-              <ul class="list-disc pl-4 space-y-0.5">
-                <li>เศษของนาทีจะถูกนับปัดเศษขึ้นเป็น 1 ชั่วโมงเต็ม ตามเงื่อนไขบริการ</li>
-                <li>กรณีเลือกใช้หลายโซนพร้อมกัน ค่าบริการรายชั่วโมงของแต่ละช่วงเวลาจะทวีคูณตามจำนวนโซนที่ขอใช้จริง</li>
-              </ul>
-            </div>
+          </div>
+
+          <!-- Terms & Conditions -->
+          <div class="card p-5 space-y-2.5 bg-slate-50/70">
+            <h3 class="text-sm font-bold text-slate-900">📌 เงื่อนไขและข้อกำหนดการใช้บริการ</h3>
+            <ol id="serviceTermsDisplay" class="list-decimal list-inside space-y-1.5 text-xs text-slate-600 leading-relaxed">
+              <!-- Populated dynamically -->
+            </ol>
           </div>
         </div>
-
       </div>
 
-      <!-- 3. My Requests History Table (Bottom Full Width) -->
+      <!-- USER REQUEST HISTORY TABLE -->
       <div class="card p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
-            <h2 class="text-lg font-bold text-slate-900">ประวัติและการจัดการคำขอ (My Requests)</h2>
-            <p class="text-xs text-slate-500">แสดงผลเฉพาะยูนิตที่ระบุเลือกอยู่ในแบบฟอร์มด้านบน</p>
+            <h3 class="text-base font-bold text-slate-900">📋 ประวัติคำขอเปิดแอร์นอกเวลาของยูนิตคุณ</h3>
+            <p class="text-xs text-slate-500">เลือกบ้านเลขที่/ยูนิตด้านบน เพื่อตรวจสอบสถานะ แก้ไข หรือยกเลิกรายการ</p>
           </div>
           <div class="flex items-center gap-2">
-            <input type="search" id="userSearchInput" class="input-field text-sm sm:w-64" placeholder="🔍 ค้นหาในประวัติยูนิตนี้..." oninput="renderUserRequestsTable()">
+            <input type="text" id="userSearchInput" class="input-field text-xs w-full sm:w-64" placeholder="🔍 ค้นหารหัส, วันที่, ชื่อผู้ขอ..." oninput="renderUserRequestsTable()">
+            <button type="button" class="btn btn-secondary text-xs whitespace-nowrap" onclick="manualSyncNow()">🔄 รีเฟรช</button>
           </div>
         </div>
 
-        <div class="table-wrap">
+        <div class="overflow-x-auto">
           <table>
             <thead>
               <tr>
                 <th>รหัส / วันที่</th>
-                <th>ยูนิต / บริษัท</th>
-                <th>โซน / รายละเอียด Group Breakdown</th>
-                <th class="num">ยอดเงิน</th>
+                <th>ยูนิต / ผู้ติดต่อ</th>
+                <th>รายละเอียดโซน & เวลา</th>
+                <th class="num">ค่าบริการ</th>
                 <th>สถานะ</th>
                 <th class="text-right">จัดการ</th>
               </tr>
             </thead>
-            <tbody id="userRequestsTbody"></tbody>
+            <tbody id="userRequestsTbody">
+              <!-- Populated dynamically -->
+            </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ==================== B. ADMIN / STAFF PORTAL ==================== -->
+    <!-- ==================== PORTAL 2: ADMIN PORTAL ==================== -->
     <section id="adminPortalSection" class="hidden space-y-6">
 
-      <!-- 1. Authentication Login Screen -->
-      <div id="adminLoginCard" class="max-w-md mx-auto card p-6 mt-8 space-y-5">
-        
-        <!-- Login Form Section -->
-        <div id="loginFormSection" class="space-y-5">
-          <div class="text-center space-y-1">
-            <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mx-auto text-2xl font-bold">🔐</div>
-            <h2 class="text-xl font-bold text-slate-900">เข้าสู่ระบบผู้ดูแล (Admin / Staff)</h2>
-            <p class="text-xs text-slate-500">แยกสิทธิ์ระหว่าง Admin (ตั้งค่าระบบได้ทั้งหมด) และ Staff (จัดการคำขอ/ออกใบแจ้งหนี้)</p>
+      <!-- LOGIN CARD -->
+      <div id="adminLoginCard" class="max-w-md mx-auto card p-8 space-y-6 my-8">
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-2xl mx-auto font-bold">
+            🔐
           </div>
-
-          <form id="loginForm" class="space-y-4" onsubmit="handleAdminLogin(event)">
-            <div>
-              <label for="loginRoleSelect" class="block text-xs font-semibold text-slate-700 mb-1">ระดับสิทธิ์ผู้ใช้งาน (Role)</label>
-              <select id="loginRoleSelect" class="input-field">
-                <option value="admin">Admin (ผู้ดูแลระบบสูงสุด - จัดการได้ทุกฟีเจอร์)</option>
-                <option value="staff">Staff (เจ้าหน้าที่อาคาร - จัดการคำขอ & ออกใบแจ้งหนี้)</option>
-              </select>
-            </div>
-            <div>
-              <label for="loginPasswordInput" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่าน (Password)</label>
-              <input type="password" id="loginPasswordInput" class="input-field" required placeholder="กรอกรหัสผ่าน">
-            </div>
-            <div id="loginErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
-            <button type="submit" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
-          </form>
+          <h2 class="text-xl font-bold text-slate-900">เข้าสู่ระบบจัดการหลังบ้าน</h2>
+          <p class="text-xs text-slate-500">สำหรับเจ้าหน้าที่ฝ่ายอาคารและผู้ดูแลระบบเท่านั้น</p>
         </div>
 
-        <!-- Force Password Change Section (First Login) -->
-        <div id="forcePasswordChangeSection" class="hidden space-y-5">
-          <div class="text-center space-y-1">
-            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto text-2xl font-bold">🔒</div>
-            <h2 class="text-xl font-bold text-slate-900">เปลี่ยนรหัสผ่านในการใช้งานครั้งแรก</h2>
-            <p class="text-xs text-slate-500">เพื่อความปลอดภัยทางบัญชี กรุณาเปลี่ยนรหัสผ่านเริ่มต้นก่อนเริ่มใช้งาน</p>
+        <!-- Standard Login Form -->
+        <form id="loginFormSection" onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
+          <div>
+            <label for="loginRoleSelect" class="block font-semibold text-slate-700 mb-1">ระดับผู้ใช้งาน (Role)</label>
+            <select id="loginRoleSelect" class="input-field">
+              <option value="admin">Admin (ผู้ดูแลระบบสูงสุด)</option>
+              <option value="staff">Staff (เจ้าหน้าที่ปฏิบัติการ)</option>
+            </select>
           </div>
+          <div>
+            <label for="loginPasswordInput" class="block font-semibold text-slate-700 mb-1">รหัสผ่าน (Password)</label>
+            <input type="password" id="loginPasswordInput" class="input-field" required placeholder="กรอกรหัสผ่าน">
+          </div>
+          <div id="loginErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 font-semibold"></div>
+          <button type="submit" class="btn btn-primary w-full py-2.5 text-sm">เข้าสู่ระบบ</button>
+        </form>
 
-          <form id="forceChangeForm" class="space-y-4" onsubmit="handleForcePasswordSubmit(event)">
-            <input type="hidden" id="forceChangeRole" value="">
-            <div>
-              <label class="block text-xs font-semibold text-slate-500">บัญชีที่จะเปลี่ยนรหัสผ่าน</label>
-              <input type="text" id="forceChangeRoleDisplay" class="input-field bg-slate-50 font-bold" readonly value="">
-            </div>
-            <div>
-              <label for="forceNewPassword" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ <span class="text-red-500">*</span></label>
-              <input type="password" id="forceNewPassword" class="input-field" required minlength="4" placeholder="กรอกรหัสผ่านใหม่ อย่างน้อย 4 ตัวอักษร">
-            </div>
-            <div>
-              <label for="forceConfirmPassword" class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่ <span class="text-red-500">*</span></label>
-              <input type="password" id="forceConfirmPassword" class="input-field" required minlength="4" placeholder="ยืนยันรหัสผ่านใหม่อีกครั้ง">
-            </div>
-            <div id="forceChangeErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
-            <button type="submit" class="btn btn-primary w-full">บันทึกรหัสผ่านใหม่ & เข้าสู่ระบบ</button>
-          </form>
-        </div>
-
+        <!-- Force Change Default Password Form -->
+        <form id="forcePasswordChangeSection" onsubmit="handleForcePasswordSubmit(event)" class="hidden space-y-4 text-xs border-t border-slate-100 pt-4">
+          <div class="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">
+            <strong>⚠️ กรุณาเปลี่ยนรหัสผ่านเริ่มต้น</strong>
+            <p class="mt-0.5 text-[11px]">เพื่อความปลอดภัย กรุณาตั้งรหัสผ่านใหม่ก่อนเข้าใช้งานระบบครั้งแรก</p>
+          </div>
+          <input type="hidden" id="forceChangeRole">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">บัญชีผู้ใช้งาน</label>
+            <input type="text" id="forceChangeRoleDisplay" class="input-field bg-slate-100 font-bold" readonly>
+          </div>
+          <div>
+            <label for="forceNewPassword" class="block font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)</label>
+            <input type="password" id="forceNewPassword" class="input-field" required minlength="4">
+          </div>
+          <div>
+            <label for="forceConfirmPassword" class="block font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่อีกครั้ง</label>
+            <input type="password" id="forceConfirmPassword" class="input-field" required minlength="4">
+          </div>
+          <div id="forceChangeErrorMsg" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 font-semibold"></div>
+          <button type="submit" class="btn btn-success w-full py-2.5 text-sm">บันทึกรหัสผ่านใหม่และเข้าสู่ระบบ</button>
+        </form>
       </div>
 
-      <!-- Authenticated Admin Content -->
+      <!-- AUTHENTICATED ADMIN DASHBOARD -->
       <div id="adminAuthenticatedContent" class="hidden space-y-6">
+        <!-- Admin Header Bar -->
+        <div class="card p-4 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="tabBtnSummary" class="btn btn-primary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('summary')">📊 ภาพรวม & ใบแจ้งหนี้</button>
+            <button type="button" id="tabBtnRequestsList" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('requestsList')">📋 รายการคำขอทั้งหมด</button>
+            <button type="button" id="tabBtnRates" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('rates')">💰 เรทราคา / โซน / วันหยุด</button>
+            <button type="button" id="tabBtnUnits" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('units')">🏢 ข้อมูลยูนิต / บริษัท</button>
+            <button type="button" id="tabBtnConfig" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('config')">⚙️ ตั้งค่าระบบ & การเชื่อมต่อ</button>
+          </div>
 
-        <!-- Admin Sub-navigation Tabs (All 5 Main Tabs Intact) -->
-        <div class="card p-2 flex flex-wrap items-center gap-1.5 no-print mb-6">
-          <button type="button" id="tabBtnSummary" class="btn btn-primary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('summary')">
-            📊 สรุปการใช้งาน
-          </button>
-          <button type="button" id="tabBtnRequestsList" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('requestsList')">
-            📋 รายการคำขอ
-          </button>
-          <button type="button" id="tabBtnRates" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('rates')">
-            💰 อัตราค่าบริการ / ปฏิทิน & เงื่อนไข
-          </button>
-          <button type="button" id="tabBtnUnits" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('units')">
-            🏢 บ้านเลขที่ / บริษัท
-          </button>
-          <button type="button" id="tabBtnConfig" class="btn btn-secondary text-xs py-2 px-4 rounded-lg" onclick="switchAdminTab('config')">
-            ⚙️ ตั้งค่าระบบ & Telegram
-          </button>
+          <div id="authUserBadge" class="hidden items-center gap-2">
+            <span id="currentRoleBadge" class="badge bg-sky-100 text-sky-800 px-3 py-1">👑 สิทธิ์: Admin</span>
+            <button type="button" class="btn btn-danger text-xs py-1.5 px-3" onclick="logoutAdmin()">ออกจากระบบ</button>
+          </div>
         </div>
 
-        <!-- TAB 1: SUMMARY & INVOICES -->
+        <!-- TAB 1: SUMMARY & INVOICING -->
         <div id="adminTabSummary" class="space-y-6">
           <!-- KPI Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="card p-4 border-l-4 border-l-emerald-500">
-              <div class="text-xs text-slate-500 font-medium">ยอดเงินรวมสุทธิ (ตัดรายการยกเลิก)</div>
+            <div class="card p-5 border-l-4 border-l-sky-600">
+              <span class="text-xs font-semibold text-slate-500">รายได้ค่าบริการรวม (อนุมัติแล้ว)</span>
               <div id="kpiActiveRevenue" class="text-2xl font-bold text-slate-900 mt-1">฿0.00</div>
-              <div class="text-[11px] text-emerald-700 mt-1">คำนวณเฉพาะรายการที่ใช้งานจริง</div>
             </div>
-            <div class="card p-4">
-              <div class="text-xs text-slate-500 font-medium">คำขอทั้งหมด</div>
+            <div class="card p-5 border-l-4 border-l-slate-600">
+              <span class="text-xs font-semibold text-slate-500">คำขอทั้งหมดในระบบ</span>
               <div id="kpiTotalCount" class="text-2xl font-bold text-slate-900 mt-1">0</div>
-              <div class="text-[11px] text-slate-400 mt-1">รายการในระบบทั้งหมด</div>
             </div>
-            <div class="card p-4 border-l-4 border-l-sky-500">
-              <div class="text-xs text-sky-700 font-medium">อนุมัติแล้ว (Approved)</div>
-              <div id="kpiApprovedCount" class="text-2xl font-bold text-sky-700 mt-1">0</div>
-              <div class="text-[11px] text-slate-400 mt-1">พร้อมเปิดบริการ</div>
+            <div class="card p-5 border-l-4 border-l-emerald-500">
+              <span class="text-xs font-semibold text-slate-500">รายการที่อนุมัติใช้งาน</span>
+              <div id="kpiApprovedCount" class="text-2xl font-bold text-emerald-700 mt-1">0</div>
             </div>
-            <div class="card p-4 border-l-4 border-l-red-500">
-              <div class="text-xs text-red-700 font-medium">ยกเลิกแล้ว (Cancelled)</div>
-              <div id="kpiCancelledCount" class="text-2xl font-bold text-red-700 mt-1">0</div>
-              <div class="text-[11px] text-slate-400 mt-1">ไม่นำไปคำนวณยอดเงินรวม</div>
+            <div class="card p-5 border-l-4 border-l-red-500">
+              <span class="text-xs font-semibold text-slate-500">รายการที่ยกเลิก</span>
+              <div id="kpiCancelledCount" class="text-2xl font-bold text-red-600 mt-1">0</div>
             </div>
           </div>
 
-          <!-- Invoice system embedded in Summary view -->
-          <div class="card p-5 no-print">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 flex-1">
-                <div>
-                  <label for="invoiceUnitFilter" class="block text-xs font-semibold text-slate-700 mb-1">เลือกยูนิต / บริษัท</label>
-                  <select id="invoiceUnitFilter" class="input-field text-xs" onchange="renderInvoices()">
-                    <option value="ALL">ทุกยูนิต (รวมทั้งหมด)</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="invoiceStartDate" class="block text-xs font-semibold text-slate-700 mb-1">ตั้งแต่วันที่</label>
-                  <input type="date" id="invoiceStartDate" class="input-field text-xs" onchange="renderInvoices()">
-                </div>
-                <div>
-                  <label for="invoiceEndDate" class="block text-xs font-semibold text-slate-700 mb-1">ถึงวันที่</label>
-                  <input type="date" id="invoiceEndDate" class="input-field text-xs" onchange="renderInvoices()">
-                </div>
-                <div>
-                  <label for="invoiceDocSwitch" class="block text-xs font-semibold text-slate-700 mb-1">เลือกใบเอกสาร</label>
-                  <select id="invoiceDocSwitch" class="input-field text-xs" onchange="renderInvoices()">
-                    <option value="BOTH">แสดงทั้ง 2 ใบ (ใบที่ 1 + ใบที่ 2)</option>
-                    <option value="DOC1">ใบที่ 1: ใบสรุปยอดรวมการใช้งานและแจ้งหนี้</option>
-                    <option value="DOC2">ใบที่ 2: รายงานรายละเอียดการขอใช้บริการ</option>
-                  </select>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" class="btn btn-secondary text-xs" onclick="exportInvoiceCsv()">📥 ส่งออก CSV</button>
-                <button type="button" class="btn btn-primary text-xs" onclick="window.print()">🖨️ พิมพ์ใบแจ้งหนี้</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Document 1: Invoice Summary (อัปเดตข้อมูลนิติบุคคลตามภาพ) -->
-          <div id="invoiceDoc1Container" class="card p-8 space-y-6">
-            <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
-              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</div>
-              <div>1168 อาคารลุมพินีทาวเวอร์ ถนนพระราม 4 แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพมหานคร 10120</div>
-              <div>โทรศัพท์ 02-677-6356-7, 02-286-9855 โทรสาร 02-286-9856 | เลขประจำตัวผู้เสียภาษีอากร 0994000189231</div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
+          <!-- Billing & Invoice Generator -->
+          <div class="card p-6 space-y-5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 no-print">
               <div>
-                <span class="badge bg-sky-100 text-sky-800 border border-sky-200 mb-2">ใบที่ 1 : Invoice Summary</span>
-                <h3 class="text-xl font-bold text-slate-900">ใบสรุปยอดรวมการใช้งานและแจ้งหนี้ค่าแอร์นอกเวลา (OT AIR)</h3>
-                <p id="invoiceDoc1Subtitle" class="text-xs text-slate-500 mt-1">สรุปเฉพาะรายการที่ใช้งานจริง (ตัดยอดรายการที่ถูกยกเลิกออก)</p>
+                <h3 class="text-base font-bold text-slate-900">🧾 ออกรายงานสรุปยอดเรียกเก็บเงิน (Billing & Invoice)</h3>
+                <p class="text-xs text-slate-500">กรองข้อมูลตามยูนิตและช่วงวันที่ เพื่อพิมพ์เอกสารหรือส่งออกไฟล์ CSV</p>
               </div>
-              <div class="text-left sm:text-right text-xs text-slate-600 space-y-0.5">
-                <div><strong>วันที่ออกเอกสาร:</strong> <span id="invoiceIssueDate1"></span></div>
-                <div><strong>ช่วงวันที่สรุปยอด:</strong> <span id="invoicePeriodText1">ทั้งหมด</span></div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" class="btn btn-secondary text-xs" onclick="exportInvoiceCsv()">📥 Export CSV</button>
+                <button type="button" class="btn btn-primary text-xs" onclick="window.print()">🖨️ พิมพ์เอกสาร (Print)</button>
               </div>
             </div>
 
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>บ้านเลขที่ / ยูนิต</th>
-                    <th>ชื่อบริษัท / ผู้เช่า</th>
-                    <th class="num">จำนวนครั้งที่ขอ</th>
-                    <th class="num">จำนวนชั่วโมงรวม</th>
-                    <th class="num">ยอดรวมค่าบริการ (บาท)</th>
-                  </tr>
-                </thead>
-                <tbody id="invoiceSummaryTbody"></tbody>
-                <tfoot>
-                  <tr class="bg-slate-50 font-bold text-slate-900">
-                    <td colspan="2">รวมสุทธิทั้งหมด (ไม่รวมรายการยกเลิก)</td>
-                    <td id="invoiceFootRequests" class="num">0 ครั้ง</td>
-                    <td id="invoiceFootHours" class="num">0 ชม.</td>
-                    <td id="invoiceFootAmount" class="num text-sky-700 text-base">฿0.00</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-
-          <!-- Document 2: Detailed Usage Breakdown (อัปเดตข้อมูลนิติบุคคลตามภาพ) -->
-          <div id="invoiceDoc2Container" class="card p-8 space-y-6">
-            <div class="text-xs text-slate-600 border-b border-slate-100 pb-3 space-y-0.5">
-              <div class="font-bold text-slate-900 text-sm">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์</div>
-              <div>1168 อาคารลุมพินีทาวเวอร์ ถนนพระราม 4 แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพมหานคร 10120</div>
-              <div>โทรศัพท์ 02-677-6356-7, 02-286-9855 โทรสาร 02-286-9856 | เลขประจำตัวผู้เสียภาษีอากร 0994000189231</div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-200 pb-5">
+            <!-- Filters -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs no-print">
               <div>
-                <span class="badge bg-indigo-100 text-indigo-800 border border-indigo-200 mb-2">ใบที่ 2 : Detailed Usage Breakdown</span>
-                <h3 class="text-xl font-bold text-slate-900">รายงานรายละเอียดการขอใช้บริการประกอบการแจ้งหนี้</h3>
-                <p class="text-xs text-slate-500 mt-1">แสดงรายละเอียดรายวัน ช่วงเวลา Group Breakdown และผู้ขอใช้บริการ</p>
+                <label class="block font-semibold text-slate-700 mb-1">เลือกยูนิต / บริษัท</label>
+                <select id="invoiceUnitFilter" class="input-field text-xs" onchange="renderInvoices()">
+                  <option value="ALL">ทุกยูนิต (รวมทั้งหมด)</option>
+                </select>
               </div>
-              <div class="text-left sm:text-right text-xs text-slate-600 space-y-0.5">
-                <div><strong>วันที่ออกเอกสาร:</strong> <span id="invoiceIssueDate2"></span></div>
-                <div><strong>กรองยูนิต:</strong> <span id="invoiceUnitText2">ทุกยูนิต</span></div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">ตั้งแต่วันที่</label>
+                <input type="date" id="invoiceStartDate" class="input-field text-xs" onchange="renderInvoices()">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">ถึงวันที่</label>
+                <input type="date" id="invoiceEndDate" class="input-field text-xs" onchange="renderInvoices()">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">รูปแบบเอกสาร</label>
+                <select id="invoiceDocSwitch" class="input-field text-xs" onchange="renderInvoices()">
+                  <option value="BOTH">แสดงทั้ง 2 ส่วน (สรุป + รายละเอียด)</option>
+                  <option value="DOC1">เฉพาะใบสรุปยอดรวมรายยูนิต</option>
+                  <option value="DOC2">เฉพาะใบแนบรายละเอียดรายครั้ง</option>
+                </select>
               </div>
             </div>
 
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>รหัสคำขอ</th>
-                    <th>วันที่ใช้บริการ</th>
-                    <th>ยูนิต / บริษัท</th>
-                    <th>ผู้ขอใช้บริการ</th>
-                    <th>โซน</th>
-                    <th>ช่วงเวลา</th>
-                    <th>รายละเอียด Group Breakdown</th>
-                    <th class="num">ชั่วโมง</th>
-                    <th class="num">ยอดเงิน (บาท)</th>
-                  </tr>
-                </thead>
-                <tbody id="invoiceDetailTbody"></tbody>
-              </table>
+            <!-- DOC 1: SUMMARY BY UNIT -->
+            <div id="invoiceDoc1Container" class="space-y-4 pt-2">
+              <div class="flex items-start justify-between border-b-2 border-slate-800 pb-3">
+                <div>
+                  <h4 class="text-lg font-bold text-slate-900">ใบสรุปยอดค่าบริการเปิดเครื่องปรับอากาศนอกเวลา (OT แอร์)</h4>
+                  <p class="text-xs text-slate-600">นิติบุคคลอาคารชุด ลุมพินีทาวเวอร์ | เลขประจำตัวผู้เสียภาษี 0994000189231</p>
+                </div>
+                <div class="text-right text-xs">
+                  <div><strong>รอบระยะเวลา:</strong> <span id="invoicePeriodText1">ทั้งหมด</span></div>
+                  <div><strong>วันที่ออกเอกสาร:</strong> <span id="invoiceIssueDate1">-</span></div>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ยูนิต</th>
+                      <th>ชื่อบริษัท / ผู้เช่า</th>
+                      <th class="num">จำนวนครั้ง</th>
+                      <th class="num">ชั่วโมงรวม</th>
+                      <th class="num">ยอดเงินรวม (บาท)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoiceSummaryTbody"></tbody>
+                  <tfoot class="bg-slate-100 font-bold text-slate-900">
+                    <tr>
+                      <td colspan="2" class="p-3 text-right">รวมทั้งสิ้น</td>
+                      <td id="invoiceFootRequests" class="p-3 num">0 ครั้ง</td>
+                      <td id="invoiceFootHours" class="p-3 num">0 ชม.</td>
+                      <td id="invoiceFootAmount" class="p-3 num text-sky-800">฿0.00</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            <!-- DOC 2: DETAILED LOGS -->
+            <div id="invoiceDoc2Container" class="space-y-4 pt-6 border-t border-dashed border-slate-300">
+              <div class="flex items-start justify-between border-b border-slate-300 pb-2">
+                <div>
+                  <h4 class="text-base font-bold text-slate-900">เอกสารแนบ: รายละเอียดการใช้บริการเปิดแอร์นอกเวลารายครั้ง</h4>
+                  <p class="text-xs text-slate-500">แสดงรายการเฉพาะสถานะ "อนุมัติแล้ว" (<span id="invoiceUnitText2">ทุกยูนิต</span>)</p>
+                </div>
+                <div class="text-right text-xs text-slate-500">
+                  วันที่พิมพ์: <span id="invoiceIssueDate2">-</span>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="text-xs">
+                  <thead>
+                    <tr>
+                      <th>รหัส</th>
+                      <th>วันที่</th>
+                      <th>ยูนิต / บริษัท</th>
+                      <th>ผู้ขอใช้บริการ</th>
+                      <th>โซนพื้นที่</th>
+                      <th>เวลา</th>
+                      <th>รายละเอียดเรท</th>
+                      <th class="num">ชม.</th>
+                      <th class="num">ยอดเงิน</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoiceDetailTbody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- TAB 2: REQUESTS LIST -->
-        <div id="adminTabRequestsList" class="hidden space-y-6">
-          <div class="card p-6 space-y-4">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h3 class="text-lg font-bold text-slate-900">รายการคำขอทั้งหมด</h3>
-                <p class="text-xs text-slate-500">จัดการ ค้นหา และปรับปรุงประวัติคำขอ</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" class="btn btn-success text-xs font-bold" onclick="exportAdminCsv()">Export CSV</button>
-              </div>
+        <!-- TAB 2: ALL REQUESTS MANAGEMENT -->
+        <div id="adminTabRequestsList" class="hidden card p-6 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">📋 รายการคำขอเปิดแอร์ทั้งหมดในระบบ</h3>
+              <p class="text-xs text-slate-500">ตรวจสอบ อนุมัติ แก้ไข ยกเลิก หรือลบรายการคำขอ</p>
             </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="text" id="adminSearchInput" class="input-field text-xs w-48 sm:w-60" placeholder="🔍 ค้นหารหัส, ยูนิต, บริษัท..." oninput="renderAdminRequestsTable()">
+              <input type="date" id="adminFilterDate" class="input-field text-xs w-36" onchange="renderAdminRequestsTable()">
+              <button type="button" class="btn btn-secondary text-xs" onclick="clearAdminFilters()">ล้างตัวกรอง</button>
+              <button type="button" class="btn btn-primary text-xs" onclick="exportAdminCsv()">📥 Export CSV</button>
+            </div>
+          </div>
 
-            <!-- Filter Row -->
-            <div class="flex flex-wrap gap-2 items-center">
-              <div class="flex-1 min-w-[250px] relative">
-                <input type="search" id="adminSearchInput" class="input-field text-sm" placeholder="🔍 ค้นหาด่วน: เลขที่คำขอ, บ้านเลขที่, บริษัท หรือชื่อผู้แจ้ง..." oninput="renderAdminRequestsTable()">
-              </div>
-              <div class="w-44">
-                <input type="date" id="adminFilterDate" class="input-field text-sm" onchange="renderAdminRequestsTable()" placeholder="mm/dd/yyyy">
-              </div>
-              <button type="button" class="btn btn-secondary px-3 py-2" onclick="clearAdminFilters()" title="ล้างค่าตัวกรอง">
-                🔄
-              </button>
-            </div>
-
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>เลขที่</th>
-                    <th>วันที่ / เวลา</th>
-                    <th>ยูนิต / บริษัท</th>
-                    <th>ผู้แจ้ง</th>
-                    <th>โซน</th>
-                    <th>ค่าบริการ</th>
-                    <th>สถานะ</th>
-                    <th class="text-right">จัดการ</th>
-                  </tr>
-                </thead>
-                <tbody id="adminRequestsTbody"></tbody>
-              </table>
-            </div>
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>รหัส</th>
+                  <th>วัน / เวลา</th>
+                  <th>ยูนิต / บริษัท</th>
+                  <th>ผู้ติดต่อ</th>
+                  <th>โซนพื้นที่</th>
+                  <th>ค่าบริการ</th>
+                  <th>สถานะ</th>
+                  <th class="text-right">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="adminRequestsTbody"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- TAB 3: RATES & PUBLIC HOLIDAYS & SERVICE TERMS & ZONES -->
+        <!-- TAB 3: RATES, ZONES & HOLIDAYS -->
         <div id="adminTabRates" class="hidden space-y-6">
-          
-          <!-- Zone Settings Card -->
+          <!-- Rates Config -->
           <div class="card p-6 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 class="text-lg font-bold text-slate-900">🗺️ ตั้งค่าโซนพื้นที่บริการ (Service Zones Configuration)</h3>
-                <p class="text-xs text-slate-500">กำหนดโซนที่ต้องการเปิดให้บริการและคำนวณราคาแบบทวีคูณตามโซนที่เปิด</p>
+                <h3 class="text-base font-bold text-slate-900">💰 ตั้งค่าอัตราค่าบริการรายชั่วโมง (Rates Matrix)</h3>
+                <p class="text-xs text-slate-500">กำหนดเรทราคาตามประเภทวันและช่วงเวลา</p>
               </div>
-              <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openAddZoneModal()">+ เพิ่มโซนบริการ</button>
+              <button type="button" class="btn btn-primary text-xs" onclick="openRateModal()">➕ เพิ่มเรทราคา</button>
             </div>
-
-            <div class="table-wrap">
+            <div class="overflow-x-auto">
               <table>
                 <thead>
                   <tr>
-                    <th class="w-16">ลำดับ</th>
-                    <th>ชื่อโซนพื้นที่บริการ</th>
-                    <th class="text-right">จัดการ</th>
-                  </tr>
-                </thead>
-                <tbody id="zonesTableTbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Dynamic Rates Grid Configuration -->
-          <div class="card p-6 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div>
-                <h3 class="text-lg font-bold text-slate-900">💰 กำหนดอัตราค่าบริการ</h3>
-                <p class="text-xs text-slate-500">ระบบคำนวณอัตราค่าบริการแบบไดนามิกประเมินตามช่วงเวลาและประเภทวัน</p>
-              </div>
-              <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openRateModal()">+ เพิ่มเรทราคา</button>
-            </div>
-
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>เงื่อนไข / ช่วงเวลา</th>
-                    <th>ประเภทวัน (Condition)</th>
-                    <th>เวลา (HH:MM)</th>
-                    <th>เรท (บาท/ชม.)</th>
+                    <th>ชื่อช่วงเวลา / เงื่อนไข</th>
+                    <th>ประเภทวัน</th>
+                    <th>ช่วงเวลา</th>
+                    <th>อัตราค่าบริการ</th>
                     <th class="text-right">จัดการ</th>
                   </tr>
                 </thead>
@@ -713,22 +640,44 @@
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Public Holidays Table -->
+            <!-- Zones Config -->
             <div class="card p-6 space-y-4">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <h3 class="text-base font-bold text-slate-900">📅 วันหยุดนักขัตฤกษ์</h3>
-                  <p class="text-xs text-slate-500">วันหยุดเพื่อใช้อัตราค่าบริการพิเศษ</p>
+                  <h3 class="text-base font-bold text-slate-900">📍 โซนพื้นที่บริการ (Air Zones)</h3>
+                  <p class="text-xs text-slate-500">จัดการรายชื่อโซนที่เปิดให้ผู้เช่าเลือก</p>
                 </div>
-                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openHolidayModal()">+ เพิ่มวันหยุด</button>
+                <button type="button" class="btn btn-primary text-xs" onclick="openAddZoneModal()">➕ เพิ่มโซน</button>
               </div>
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="w-12">#</th>
+                      <th>ชื่อโซนพื้นที่</th>
+                      <th class="text-right">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="zonesTableTbody"></tbody>
+                </table>
+              </div>
+            </div>
 
-              <div class="table-wrap">
+            <!-- Holidays Config -->
+            <div class="card p-6 space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">📅 วันหยุดนักขัตฤกษ์ (Public Holidays)</h3>
+                  <p class="text-xs text-slate-500">วันที่ระบุจะใช้เรทราคาวันหยุดนักขัตฤกษ์อัตโนมัติ</p>
+                </div>
+                <button type="button" class="btn btn-primary text-xs" onclick="openHolidayModal()">➕ เพิ่มวันหยุด</button>
+              </div>
+              <div class="overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
                       <th>วันที่</th>
-                      <th>ชื่อวันหยุดนักขัตฤกษ์</th>
+                      <th>ชื่อวันหยุด</th>
                       <th class="text-right">จัดการ</th>
                     </tr>
                   </thead>
@@ -736,131 +685,110 @@
                 </table>
               </div>
             </div>
-
-            <!-- Service Terms Table -->
-            <div class="card p-6 space-y-4">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div>
-                  <h3 class="text-base font-bold text-slate-900">📄 เงื่อนไขการใช้บริการ</h3>
-                  <p class="text-xs text-slate-500">ข้อกำหนดสำหรับแสดงผลในส่วนท้ายแบบฟอร์มหน้าผู้ใช้งาน</p>
-                </div>
-                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3.5" onclick="openTermModal()">+ เพิ่มเงื่อนไข</button>
-              </div>
-
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th class="w-12">ลำดับ</th>
-                      <th>ข้อกำหนดและเงื่อนไข</th>
-                      <th class="text-right">จัดการ</th>
-                    </tr>
-                  </thead>
-                  <tbody id="termsTableTbody"></tbody>
-                </table>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <!-- TAB 4: UNITS MASTER -->
-        <div id="adminTabUnits" class="hidden space-y-6">
+          <!-- Service Terms Config -->
           <div class="card p-6 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 class="text-lg font-bold text-slate-900">🏢 บ้านเลขที่ / บริษัท (Dropdown Master Data)</h3>
-                <p class="text-xs text-slate-500">จัดการข้อมูลยูนิต ดาวน์โหลดเทมเพลต หรือนำเข้าจากไฟล์ CSV/Excel</p>
+                <h3 class="text-base font-bold text-slate-900">📌 ข้อกำหนดและเงื่อนไขการใช้บริการ</h3>
+                <p class="text-xs text-slate-500">ข้อความเงื่อนไขที่แสดงในหน้าแบบฟอร์มผู้ขอใช้บริการ</p>
               </div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <button type="button" class="btn btn-secondary text-xs font-bold py-1.5 px-3" onclick="downloadUnitCsvTemplate()">
-                  📥 ดาวน์โหลด Template
-                </button>
-                <label class="btn btn-success text-xs font-bold py-1.5 px-3 cursor-pointer">
-                  📥 นำเข้า CSV/Excel
-                  <input type="file" id="csvImportInput" accept=".csv" class="hidden" onchange="handleUnitCsvImport(event)">
-                </label>
-                <button type="button" class="btn btn-primary text-xs font-bold py-1.5 px-3" onclick="openAddUnitModal()">
-                  + เพิ่มยูนิต
-                </button>
-              </div>
+              <button type="button" class="btn btn-primary text-xs" onclick="openTermModal()">➕ เพิ่มเงื่อนไข</button>
             </div>
-
-            <!-- Suggestion Banner -->
-            <div class="p-3 bg-sky-50 border border-sky-100 text-sky-950 rounded-xl text-xs flex items-start gap-2">
-              <span class="text-base">💡</span>
-              <div>
-                <strong>คำแนะนำการนำเข้าไฟล์:</strong>
-                <p class="mt-0.5 text-slate-600">คุณสามารถคลิกปุ่ม "ดาวน์โหลด Template" ด้านบนเพื่อรับไฟล์ตัวอย่าง นำไปกรอกข้อมูลแล้วอัปโหลดกลับเข้ามาได้ทันที</p>
-              </div>
-            </div>
-
-            <div class="table-wrap">
+            <div class="overflow-x-auto">
               <table>
                 <thead>
                   <tr>
-                    <th>บ้านเลขที่ / ยูนิต</th>
-                    <th>ชื่อบริษัท</th>
+                    <th class="w-12">ข้อ</th>
+                    <th>รายละเอียดเงื่อนไข</th>
                     <th class="text-right">จัดการ</th>
                   </tr>
                 </thead>
-                <tbody id="unitMasterTbody"></tbody>
+                <tbody id="termsTableTbody"></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB 5: SYSTEM CONFIG & TELEGRAM (Settings Menu) -->
-        <div id="adminTabConfig" class="hidden space-y-6">
-          <!-- Nested Sub-tab Buttons -->
-          <div class="flex border-b border-slate-200">
-            <button type="button" id="subTabBtnGeneral" class="px-4 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700" onclick="switchSubTab('general')">
-              ⚙️ ทั่วไป & Telegram
-            </button>
-            <button type="button" id="subTabBtnSync" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sync')">
-              ☁️ สถานะ & ซิงค์
-            </button>
-            <button type="button" id="subTabBtnBackup" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('backup')">
-              📖 สำรองข้อมูล JSON
-            </button>
+        <!-- TAB 4: UNITS & COMPANIES MASTER -->
+        <div id="adminTabUnits" class="hidden card p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">🏢 ฐานข้อมูลยูนิตและรายชื่อบริษัทผู้เช่า</h3>
+              <p class="text-xs text-slate-500">เพิ่ม แก้ไข หรือนำเข้าข้อมูลยูนิตจำนวนมากผ่านไฟล์ CSV</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" class="btn btn-secondary text-xs" onclick="downloadUnitCsvTemplate()">📄 โหลดไฟล์ตัวอย่าง CSV</button>
+              <label class="btn btn-secondary text-xs cursor-pointer">
+                📥 นำเข้า CSV
+                <input type="file" accept=".csv" class="hidden" onchange="handleUnitCsvImport(event)">
+              </label>
+              <button type="button" class="btn btn-primary text-xs" onclick="openAddUnitModal()">➕ เพิ่มยูนิตใหม่</button>
+            </div>
           </div>
 
-          <!-- SUB-TAB 1: GENERAL & TELEGRAM CONFIG -->
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>บ้านเลขที่ / ยูนิต</th>
+                  <th>ชื่อบริษัท / ผู้เช่า</th>
+                  <th class="text-right">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="unitMasterTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 5: SYSTEM SETTINGS & INTEGRATIONS -->
+        <div id="adminTabConfig" class="hidden space-y-6">
+          <!-- Sub-tabs Navigation -->
+          <div class="flex border-b border-slate-200 gap-2">
+            <button type="button" id="subTabBtnGeneral" class="px-4 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700" onclick="switchSubTab('general')">🔔 ตั้งค่า Telegram & รหัสผ่าน</button>
+            <button type="button" id="subTabBtnSync" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('sync')">☁️ เชื่อมต่อ Google Sheets</button>
+            <button type="button" id="subTabBtnBackup" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800" onclick="switchSubTab('backup')">💾 สำรองข้อมูล (Backup)</button>
+          </div>
+
+          <!-- SUB-TAB 1: TELEGRAM & SECURITY -->
           <div id="subTabGeneral" class="space-y-6">
             <div class="card p-6 space-y-5">
-              <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <h4 class="text-base font-bold text-slate-900">⚙️ ตั้งค่า Telegram & รหัสผ่านเจ้าหน้าที่</h4>
-                  <p class="text-xs text-slate-500">จัดการข้อมูล Bot Webhook และความปลอดภัย</p>
+                  <h4 class="text-base font-bold text-slate-900">ตั้งค่าการแจ้งเตือนผ่าน Telegram Bot</h4>
+                  <p class="text-xs text-slate-500">ส่งแจ้งเตือนเข้ากลุ่มทีมช่างและฝ่ายอาคารอัตโนมัติเมื่อมีคำขอใหม่หรือยกเลิก</p>
                 </div>
-                <!-- เพิ่มปุ่มทดสอบ Telegram ตามฟังก์ชันที่ขอ -->
-                <button type="button" class="btn btn-primary text-xs" onclick="testTelegramFromFrontend()">
-                  🔔 ทดสอบส่ง Telegram
-                </button>
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                  <input type="checkbox" id="enableTelegramCheck" class="w-4 h-4 text-sky-600 rounded" checked onchange="saveGeneralSettings()">
+                  เปิดใช้งานแจ้งเตือน
+                </label>
               </div>
 
-              <div class="space-y-4 text-xs">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label for="telegramTokenInput" class="block font-semibold text-slate-700 mb-1">Telegram Bot Token</label>
-                  <input type="text" id="telegramTokenInput" class="input-field" value="7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8" onchange="saveGeneralSettings()">
+                  <label for="telegramTokenInput" class="block text-xs font-semibold text-slate-700 mb-1">Telegram Bot Token</label>
+                  <input type="text" id="telegramTokenInput" class="input-field font-mono text-xs" value="7348722720:AAEK-E8ysQAlMDNnpmh6FfIqjHGX5Gy_uL8" onchange="saveGeneralSettings()">
                 </div>
                 <div>
-                  <label for="telegramChatIdInput" class="block font-semibold text-slate-700 mb-1">Group Chat ID</label>
-                  <input type="text" id="telegramChatIdInput" class="input-field" value="-100310351268" onchange="saveGeneralSettings()">
+                  <label for="telegramChatIdInput" class="block text-xs font-semibold text-slate-700 mb-1">Telegram Chat ID / Group ID</label>
+                  <input type="text" id="telegramChatIdInput" class="input-field font-mono text-xs" value="-100310351268" onchange="saveGeneralSettings()">
                 </div>
-                <div class="flex items-center gap-2 pt-2">
-                  <input type="checkbox" id="enableTelegramCheck" class="w-4 h-4 rounded text-sky-600 border-slate-300" onchange="saveGeneralSettings()" checked>
-                  <label for="enableTelegramCheck" class="font-semibold text-slate-800 text-xs">เปิดใช้งานการแจ้งเตือนไปยัง Telegram</label>
-                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 pt-2">
+                <button type="button" class="btn btn-primary text-xs" onclick="saveGeneralSettings(); alert('✅ บันทึกการตั้งค่าเรียบร้อยแล้ว')">💾 บันทึกการตั้งค่า</button>
+                <button type="button" class="btn btn-secondary text-xs" onclick="testTelegramFromFrontend()">📨 ทดสอบส่งข้อความเข้า Telegram</button>
               </div>
             </div>
 
-            <!-- Password management card -->
-            <div class="card p-6 space-y-4">
-              <div class="border-b border-slate-100 pb-3">
-                <h4 class="text-base font-bold text-slate-900">🔑 รหัสผ่านผู้ใช้งานหลังบ้าน</h4>
-                <p class="text-xs text-slate-500">สิทธิ์ Admin และ Staff</p>
+            <!-- Password Management -->
+            <div class="card p-6 flex items-center justify-between">
+              <div>
+                <h4 class="text-base font-bold text-slate-900">🔑 ความปลอดภัยและรหัสผ่าน</h4>
+                <p class="text-xs text-slate-500">เปลี่ยนรหัสผ่านสำหรับบัญชี Admin และ Staff</p>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
                 <button type="button" class="btn btn-secondary text-xs" onclick="openPasswordModal()">เปลี่ยนรหัสผ่านผู้ดูแล</button>
               </div>
             </div>
@@ -944,6 +872,11 @@
     </section>
 
   </main>
+
+  <!-- FOOTER WATERMARK -->
+  <footer class="py-4 px-6 text-center sm:text-right text-[11px] text-slate-400 border-t border-slate-200/60 mt-8 no-print">
+    APW.Gasie
+  </footer>
 
   <!-- Modern Time Picker Modal -->
   <div id="modernTimePickerModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
@@ -1292,7 +1225,7 @@
         { id: 'term-5', text: 'การขอยกเลิกน้อยกว่า 3 ชั่วโมง (หรือขอยกเลิกก่อน 1 ชั่วโมง) ฝ่ายอาคารขอสงวนสิทธิ์เรียกเก็บค่าบริการตามวันและเวลาที่แจ้งไว้เดิมเต็มจำนวน' },
         { id: 'term-6', text: 'การนับชั่วโมงการใช้งาน หากมีเศษของนาที จะนับปัดขึ้นเป็น 1 ชั่วโมงเต็มทันที (เช่น 1 ชม. 15 นาที คิดเป็น 2 ชม.)' }
       ],
-      telegramToken: '7348722720:AAEk-E8ysQA1MDNnpmh6FFiQjHGX5Gy_uL8',
+      telegramToken: '7348722720:AAEK-E8ysQAlMDNnpmh6FfIqjHGX5Gy_uL8',
       telegramChatId: '-100310351268',
       enableTelegram: true,
       gasWebhookUrl: 'https://script.google.com/macros/s/AKfycbxLRjTY_4Ghb1wF50IibrxKfb97KJSuMuvgKo7x_0NJlRsBi_4g4GL5S6jPZAuUDLwj/exec',
@@ -1347,11 +1280,11 @@
       if (!pill || !txtEl) return;
       txtEl.textContent = text;
       if (status === 'ok') {
-        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer';
       } else if (status === 'syncing') {
-        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200';
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 cursor-pointer';
       } else {
-        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 cursor-pointer';
       }
     }
 
@@ -1552,10 +1485,13 @@
       }, 10000);
     }
 
-    // ฟังก์ชันเพิ่มใหม่สำหรับทดสอบการส่ง Telegram จากหน้าจอ[cite: 4]
+    // ฟังก์ชันทดสอบ Telegram พร้อมดึงค่าล่าสุดและดักจับ Error 401
     async function testTelegramFromFrontend() {
-      const botToken = appState.telegramToken;
-      const chatId = appState.telegramChatId;
+      saveGeneralSettings();
+
+      const botToken = (appState.telegramToken || '').trim();
+      const chatId = (appState.telegramChatId || '').trim();
+
       if (!botToken || !chatId) {
         alert('⚠️ กรุณากรอก Bot Token และ Chat ID ให้ครบถ้วนก่อนทดสอบ');
         return;
@@ -1578,12 +1514,16 @@
         const result = await response.json();
         if (result.ok) {
           alert("✅ ส่งข้อความทดสอบไปที่ Telegram สำเร็จแล้ว!");
+        } else if (response.status === 401 || result.error_code === 401) {
+          alert("❌ Error 401 (Unauthorized): Bot Token ไม่ถูกต้อง หรือถูกยกเลิกไปแล้ว\nกรุณาตรวจสอบ Token จาก @BotFather อีกครั้ง");
+        } else if (response.status === 400 || result.error_code === 400) {
+          alert("❌ Error 400 (Bad Request): Chat ID ไม่ถูกต้อง หรือบอทยังไม่ได้อยู่ในกลุ่ม\nรายละเอียด: " + (result.description || ''));
         } else {
-          alert("❌ เกิดข้อผิดพลาดจาก Telegram: " + (result.description || 'ไม่ทราบสาเหตุ'));
+          alert("❌ เกิดข้อผิดพลาดจาก Telegram (" + (result.error_code || response.status) + "): " + (result.description || 'ไม่ทราบสาเหตุ'));
         }
       } catch (error) {
         console.error("Error:", error);
-        alert("❌ ไม่สามารถเชื่อมต่อกับ Telegram API ได้ (ตรวจสอบ Network หรือ CORS)");
+        alert("❌ ไม่สามารถเชื่อมต่อกับ Telegram API ได้ (ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต)");
       }
     }
 
@@ -3226,8 +3166,8 @@
               units: Array.isArray(parsed.units) ? parsed.units : appState.units,
               zones: Array.isArray(parsed.zones) ? parsed.zones : appState.zones,
               ratesList: Array.isArray(parsed.ratesList) ? parsed.ratesList : defaultState.ratesList,
-              holidays: Array.isArray(parsed.holidays) ? parsed.holidays : defaultState.holidays,
-              serviceTermsList: Array.isArray(parsed.serviceTermsList) ? parsed.serviceTermsList : defaultState.serviceTermsList,
+              holidays: Array.isArray(parsed.holidays) ? parsed.holidays : appState.holidays,
+              serviceTermsList: Array.isArray(parsed.serviceTermsList) ? parsed.serviceTermsList : appState.serviceTermsList,
               requests: Array.isArray(parsed.requests) ? parsed.requests : appState.requests
             };
             saveAppState();
